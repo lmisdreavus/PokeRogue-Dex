@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PokeRogue SearchDex</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Set default text color for the entire page */
+    body {
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      text-align: center; /* Center the text horizontally */
+      font-family: Verdana, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+      <!-- Page Title -->
+      <h1>&#x1F50E;&#xFE0E; PokeRogue SearchDex</h1>
+        <!-- Search Bar -->
+        <input type="text" id="searchBox" style="color:rgb(0, 0, 0)" placeholder="Search Species / Types / Abilities" />
+        <!-- Locked and suggested filters -->
+        <div id="search-section">
+          <div id="filter-container"></div>
+          <div id="suggestions"></div>
+        </div>
+        <!-- Header Row -->
+        <div class="header-row">
+          <span data-sort="dexno" text-def="Dex">Dex<br><p style="color:rgb(140, 130, 240); margin: 0;">▲</p></span>
+          <span data-sort="img" text-def="">  </span>
+          <span data-sort="spec" text-def="Species">Species</span>
+          <span data-sort="type1" text-def="Types">Types</span>
+          <span data-sort="ab1" text-def="Abilities">Abilities</span>
+          <span data-sort="bst" text-def="BST">BST</span>
+          <span data-sort="hp" text-def="HP">HP</span>
+          <span data-sort="atk" text-def="Atk">Atk</span>
+          <span data-sort="def" text-def="Def">Def</span>
+          <span data-sort="spa" text-def="SpA">SpA</span>
+          <span data-sort="spd" text-def="SpD">SpD</span>
+          <span data-sort="spe" text-def="Spe">Spe</span>
+        </div>
+        <!-- List of Items -->
+        <ul id="itemList">
+          </ul>
+          </div>
+  <script src="pokedex_data.js"></script>
+  <script src="filters.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
