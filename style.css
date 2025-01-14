@@ -34,6 +34,7 @@ body {
   background: #ffffff;
   border: 1px solid #1B181E;
   border-radius: 4px;
+  font-size: 20px;
 }
 #searchBox:focus {
   outline: 2px solid rgb(140, 130, 240);
@@ -171,6 +172,7 @@ body {
     border: 1px solid #ffffff;
     border-radius: 4px;
     font-weight: bold;
+    font-size: 20px;
     background-color: #151019;
     height: 72px;
   }
@@ -196,6 +198,7 @@ body {
     justify-content: space-between; /* Evenly space the columns */
     padding: 10px;
     border: 1px solid #ffffff;
+    font-size: 20px;
     margin-bottom: 5px;
     border-radius: 4px;
     background-color: #151019;  
