@@ -4,6 +4,7 @@ body {
   background-color: #0E0C0F;
   margin: 0px;
   padding: 0px;
+  width: 100vw;
   min-height: 100vh;
   max-height: 100vh;
 }
@@ -12,7 +13,7 @@ body {
   flex-direction: column;
   width: calc(100vw-45px);
   max-width: 800px;
-  min-width: 500px;
+  min-width: 400px;
   min-height: 100vh;
   max-height: 100vh;
   background: #171619;
@@ -34,7 +35,6 @@ body {
   background: #ffffff;
   border: 1px solid #1B181E;
   border-radius: 4px;
-  font-size: 20px;
 }
 #searchBox:focus {
   outline: 2px solid rgb(140, 130, 240);
@@ -158,6 +158,7 @@ body {
 }
 
 /* Mobile View - Double Row Layout */
+/* My phone is 414px by 763px */
 @media (max-width: 768px) {
   .container {
     padding: 5px;
@@ -172,7 +173,6 @@ body {
     border: 1px solid #ffffff;
     border-radius: 4px;
     font-weight: bold;
-    font-size: 20px;
     background-color: #151019;
     height: 72px;
   }
@@ -198,23 +198,30 @@ body {
     justify-content: space-between; /* Evenly space the columns */
     padding: 10px;
     border: 1px solid #ffffff;
-    font-size: 20px;
     margin-bottom: 5px;
     border-radius: 4px;
     background-color: #151019;  
+    max-height: 168px;
   }
   .row {
     align-items: center; /* Center items vertically */
     text-align: center;
     display: grid;
     gap: 10px; /* Spacing between columns */
+    /* outline: 1px solid red; */
   }
   .row:first-child {
-    grid-template-columns: 0.5fr 0.5fr 2fr 1.5fr 2.5fr; /* Custom widths for each column */
-    margin-bottom: 10px; /* Space between rows */
+    /* grid-template-columns: 0.5fr 0.5fr 2fr 1.5fr 2.5fr; */
+    grid-template-columns: 1fr 4fr;
+    margin-bottom: 7px;
+  }
+  .row:nth-child(2) {
+    grid-template-columns: 0.5fr 2fr 2fr;
+    margin-bottom: 7px;
+    gap: 0px;
   }
   .row:last-child {
-    grid-template-columns: repeat(7, 0.5fr);
+    grid-template-columns: repeat(9, 0.5fr);
   }
 }
 
@@ -228,6 +235,7 @@ body {
   align-items: center;
   text-align: center;
   padding: 0 0px;
+  /* outline: 1px solid red; */
   /* background-color: green; */
 }
 
@@ -236,9 +244,10 @@ body {
 }
 
 #itemList li img {
-  /* width: 50px; 
-  height: 40px;  */
+  width: 80px; 
+  height: 72px; 
   margin-right: 0px;
   border-radius: 0%; 
-  object-fit: none;
+  object-fit:none;
+  /* outline: 1px solid red; */
 }

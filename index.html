@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PokeRogue SearchDex</title>
   <link rel="stylesheet" href="style.css">
   <style>
@@ -15,12 +14,22 @@
       text-align: center; /* Center the text horizontally */
       font-family: Verdana, sans-serif;
     }
+    a {
+      color: #0066cc; /* Changes the default hyperlink color */
+      /* text-decoration: none; */
+    }
+    a:hover {
+      color: rgb(240, 230, 140) !important; /* Changes the color when hovered */
+    }
+    a:visited {
+      color: #0066cc; /* Changes the color of visited links */
+    }
   </style>
 </head>
 <body>
   <div class="container">
       <!-- Page Title -->
-      <h1 id="page-title">&#x1F50E;&#xFE0E; PokeRogue SearchDex</h1>
+      <h1 id="page-title">&#x1F50E;&#xFE0E; PokeRogue Search</h1>
         <!-- Search Bar -->
         <input type="text" id="searchBox" style="color:rgb(0, 0, 0)" placeholder="Search Species / Types / Abilities" />
         <!-- Locked and suggested filters -->

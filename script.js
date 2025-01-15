@@ -53,7 +53,7 @@ let dictOfSets = { // TEST FOR PREFILTERING
 
 // Display items based on query and locked filters
 function refreshAllItems() {
-  const query = searchBox.value.toLowerCase();
+  const query = searchBox.value.toLowerCase().replace(/\s+/g, '');
   itemList.innerHTML = ""; // Clear existing items
   filteredItems = items;
   // if (suggestionPreview != null) {
@@ -120,12 +120,12 @@ function renderMoreItems() {
     // Create each column and set its text
     const dexColumn = document.createElement('div');
     dexColumn.className = 'item-column';
+    dexColumn.innerHTML = '<b><a href="https://wiki.pokerogue.net/pokedex:' + item.dexno + '" target="_blank">#' + item.dexno + '</a></b>';
     // if (showMoveLearn) {
     //   let dexHeader = document.querySelector('.header-container span')
     //   dexHeader.innerHTML = 'Move'+'<br><p style="color:rgb(140, 130, 240); margin: 0;">' + (sortState.ascending ? "▲" : "▼") + '</p>';
     //   dexColumn.innerHTML = '<b>' + item[sortState.column] + '</b>';
     // } else {
-    dexColumn.innerHTML = '<b>' + item.dexno + '</b>';
     // }
     
     const img = document.createElement('img');
@@ -141,7 +141,6 @@ function renderMoreItems() {
 
     const typeColumn = document.createElement('div');
     typeColumn.className = 'item-column';
-    const typeColor1 = "#0000FF";
     typeColumn.innerHTML = '<p style="color:' + typeColors[item.type1] + '; margin: 0;"><b>' + item.type1 + '</p>' 
                          + '<p style="color:' + typeColors[item.type2] + '; margin: 0;">'    + item.type2 + '</b></p>';
 
@@ -153,6 +152,13 @@ function renderMoreItems() {
     '<p style="color:rgb(240, 230, 140); margin: 0;">' + item.hab + '</p>' +
     '<p style="color:rgb(140, 130, 240); margin: 0;">' + item.pas + '</p></b>';
 
+    const moveColumn = document.createElement('div'); // style="font-size:16px;""
+    moveColumn.className = 'item-column';
+    moveColumn.innerHTML = '<p style="margin: 0;"><b>' + item.egg1 + '<br>' + item.egg2 + '<br>' + item.egg3 + '<br>' +
+                   '</p><p style="color:rgb(240, 230, 140); margin: 0;">' + item.egg4 + '</p></b>';
+
+    const costColumn = document.createElement('div');
+          costColumn.className = 'item-column'; costColumn.innerHTML = '<b>Cost<br>' + 'X' + '</b>';                  
     const bstColumn = document.createElement('div'); // Create the stats columns
           bstColumn.className = 'item-column'; bstColumn.innerHTML = '<b>BST<br>' + item.bst +'</b>';
     const hpColumn = document.createElement('div');
@@ -169,19 +175,32 @@ function renderMoreItems() {
           speColumn.className = 'item-column'; speColumn.innerHTML = '<b>Spe<br>' + item.spe +'</b>';
 
     const row1 = document.createElement('div'); row1.className = 'row'; let row2 = row1;
-    
-    row1.appendChild(dexColumn);      
-    row1.appendChild(img);             
-    row1.appendChild(specColumn);
-    row1.appendChild(typeColumn);     row1.appendChild(abilityColumn);   
-    
-    if (isMobile) { row2 = document.createElement('div'); row2.className = 'row'; li.appendChild(row1); }
-
-    row2.appendChild(bstColumn);
-    row2.appendChild(hpColumn);       row2.appendChild(atkColumn);       row2.appendChild(defColumn);
-    row2.appendChild(spaColumn);      row2.appendChild(spdColumn);       row2.appendChild(speColumn);    
-    
-    li.appendChild(row2); // Append the first or second row
+    if (isMobile) {
+      row1.appendChild(dexColumn);      
+      row1.appendChild(specColumn);
+      row2 = document.createElement('div'); row2.className = 'row'; li.appendChild(row1);
+      row2.appendChild(img);              
+      row2.appendChild(abilityColumn);   
+      row2.appendChild(moveColumn);   
+      row3 = document.createElement('div'); row3.className = 'row'; li.appendChild(row2);
+      row3.appendChild(typeColumn);
+      row3.appendChild(costColumn);
+      row3.appendChild(bstColumn);
+      row3.appendChild(hpColumn);       row3.appendChild(atkColumn);       row3.appendChild(defColumn);
+      row3.appendChild(spaColumn);      row3.appendChild(spdColumn);       row3.appendChild(speColumn);    
+      li.appendChild(row3); // Append the 3rd row
+    } else {
+      row1.appendChild(dexColumn);      
+      row1.appendChild(img);             
+      row1.appendChild(specColumn);    
+      row1.appendChild(abilityColumn);   
+      row1.appendChild(moveColumn); 
+      row1.appendChild(costColumn);
+      row1.appendChild(bstColumn);
+      row1.appendChild(hpColumn);       row1.appendChild(atkColumn);       row1.appendChild(defColumn);
+      row1.appendChild(spaColumn);      row1.appendChild(spdColumn);       row1.appendChild(speColumn);    
+      li.appendChild(row1); // Append the only row
+    }
     itemList.appendChild(li); // Append the current entry to the list of Pokemon
   });
 }
@@ -194,11 +213,11 @@ function getBackgroundClass(categ) { // Return suggestion class based on categor
 
 // Display the filter suggestions *************************
 function displaySuggestions() {
-  const query = searchBox.value.toLowerCase();
+  const query = searchBox.value.toLowerCase().replace(/\s+/g, '');
   // Filter suggestions based on query and exclude already locked filters
   let matchingSuggestions = [];
     matchingSuggestions = possibleFilters.filter(
-      (attr) => attr.value.toLowerCase().includes(query) // Contains the search query and is not already locked
+      (attr) => attr.value.toLowerCase().replace(/\s+/g, '').includes(query) // Contains the search query and is not already locked
         && !lockedFilters.some((f) => f.categ.includes(attr.categ) && f.value.includes(attr.value)));
 
         // Erase the list of suggestions if it is too large 
@@ -265,9 +284,7 @@ function removeFilter(filterToRemove, filterTag) {
   searchBox.focus();
 }
 
-// Event listener for the header row - Clicking on the header row to sort ***************
-// headerContainer.addEventListener('click', event => {clickTarget(event.target.closest("span"))} );
-
+// Event function for the header row - Clicking on the header row to sort ***************
 function updateHeader(clickTarget = null) {
   console.log(clickTarget?.sortattr)
   const sortAttribute = clickTarget?.sortattr;
@@ -317,11 +334,6 @@ window.addEventListener("scroll", () => {
   if (window.scrollY + window.innerHeight >= document.body.scrollHeight * 0.8 - 1000) {
     renderMoreItems();
   }
-  console.log({
-    scrollTop: window.scrollY,
-    clientHeight: window.innerHeight,
-    scrollHeight: document.body.scrollHeight,
-  });
 });
 
 // Initial display
