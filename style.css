@@ -1,4 +1,7 @@
 /* style.css */
+html {
+  font-size: 16px;
+}
 body {
   font-family: Arial, sans-serif;
   background-color: #0E0C0F;
@@ -12,7 +15,7 @@ body {
   display: flex;
   flex-direction: column;
   width: calc(100vw-45px);
-  max-width: 800px;
+  max-width: 1000px;
   min-width: 400px;
   min-height: 100vh;
   max-height: 100vh;
@@ -25,7 +28,8 @@ body {
 #page-title {
   /* background-color: green; */
   margin-top: 0px;
-  margin-bottom: 20px;
+  margin-bottom: 13px;
+  font-size: calc(0.6vw + 16px);
 }
 
 /* Search box */
@@ -47,6 +51,7 @@ body {
 }
 #filter-container {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin: 10px 0;
   margin-bottom: 12px;
@@ -78,16 +83,6 @@ body {
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
-}
-.suggestion-ability {
-  background-color: #0E0B11;
-  border: 2px solid #29252D;
-}
-.suggestion-move {
-  background-color: #0E0B11;
-  border: 2px solid #29252D;
-}
-.suggestion-default { /* Type */
   background-color: #0E0B11;
   border: 2px solid #29252D;
 }
@@ -109,16 +104,16 @@ body {
     margin-top: 20px;
   }
   #header-container {
-    /* display: grid; */
     align-items: center;
     justify-content: space-between;
     padding: 10px;
     border: 1px solid #ffffff;
     border-radius: 4px;
     margin-bottom: 5px;
+    min-width: 978px;
+    max-width: 978px;
     font-weight: bold;
     background-color: #151019;
-    height: 80px;
   }
   .header-row {
     display: grid;
@@ -126,24 +121,26 @@ body {
     text-align: center;
     display: grid;
     gap: 10px;
-    width: 100%;
-    height: 60px;
+    height: 36px;
     cursor: pointer;
     /* outline: 1px solid red; */
   }
   .header-row:first-child {
-    grid-template-columns: 0.5fr 0.5fr 2fr 1fr 2.5fr repeat(7, 0.5fr);
+    grid-template-columns: 0.8fr 55px 2fr 1fr 2.5fr 2.5fr 0.7fr repeat(7, 0.5fr);
   }
   #itemList li {
     align-items: center;
     justify-content: space-between;
     padding: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
     border: 1px solid #ffffff;
     margin-bottom: 5px;
     border-radius: 4px;
     background-color: #151019;
-    min-height: 50px;
-    max-height: 80px;
+    max-height: 82px;
+    min-width: 978px;
+    max-width: 978px;
   }
   .row {
     align-items: center;
@@ -153,7 +150,11 @@ body {
     /* outline: 1px solid red; */
   }
   .row:first-child {
-    grid-template-columns: 0.5fr 0.5fr 2fr 1fr 2.5fr repeat(7, 0.5fr);
+    grid-template-columns: 0.8fr 0.5fr 2fr 1fr 2.5fr 2.5fr 0.7fr repeat(7, 0.5fr);
+  }
+  #itemList li img {
+    margin-right: -15px;
+    margin-left: -10px;
   }
 }
 
@@ -166,7 +167,6 @@ body {
     margin-top: 0px;
   }
   #header-container {
-    /* display: grid; */
     align-items: center;
     justify-content: space-between;
     padding: 10px;
@@ -188,10 +188,10 @@ body {
     /* outline: 1px solid red; */
   }
   .header-row:first-child {
-    grid-template-columns: 0.5fr 0.5fr 2fr 1.5fr 2.5fr;
+    grid-template-columns: 0.5fr 0.5fr 1fr 1fr 1.4fr;
   }
   .header-row:last-child {
-    grid-template-columns: repeat(7, 0.5fr);
+    grid-template-columns: 64px repeat(8, 0.5fr);
   }
   #itemList li {
     align-items: center; /* Center items vertically */
@@ -214,6 +214,7 @@ body {
     /* grid-template-columns: 0.5fr 0.5fr 2fr 1.5fr 2.5fr; */
     grid-template-columns: 1fr 4fr;
     margin-bottom: 7px;
+    /* background-color: #201925;   */
   }
   .row:nth-child(2) {
     grid-template-columns: 0.5fr 2fr 2fr;
@@ -221,7 +222,7 @@ body {
     gap: 0px;
   }
   .row:last-child {
-    grid-template-columns: repeat(9, 0.5fr);
+    grid-template-columns: 64px repeat(8, 0.5fr);
   }
 }
 
@@ -229,14 +230,13 @@ body {
   align-items: center;
   text-align: center;
   padding: 0 0px;
-  /* background-color: green; */
+  /* outline: 1px solid red; */
 }
 .item-column {
   align-items: center;
   text-align: center;
   padding: 0 0px;
   /* outline: 1px solid red; */
-  /* background-color: green; */
 }
 
 #itemList li:nth-child(odd) {
@@ -246,7 +246,6 @@ body {
 #itemList li img {
   width: 80px; 
   height: 72px; 
-  margin-right: 0px;
   border-radius: 0%; 
   object-fit:none;
   /* outline: 1px solid red; */
