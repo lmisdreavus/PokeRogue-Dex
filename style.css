@@ -28,38 +28,54 @@ body {
 #page-title {
   /* background-color: green; */
   margin-top: 0px;
-  margin-bottom: 13px;
-  font-size: calc(0.6vw + 16px);
+  margin-bottom: 14px;
+  font-size: calc(0.6vw + 24px);
+}
+
+.colorful-text span {
+  display: inline-block;
+  animation: colorChange 2s ease-in-out;
+  animation-delay: calc(var(--i) * 0.05s); /* Delay each letter */
+}
+@keyframes colorChange {
+  0% { color: rgb(255, 255, 255); }
+  50% { color: rgb(140, 130, 240); }
+  /* 50% { color: rgb(255, 255, 255); } */
+  /* 75% { color: rgb(240, 230, 140); } */
+  100% { color: rgb(255, 255, 255); }
 }
 
 /* Search box */
 #searchBox {
   padding: 10px;
-  margin-bottom: 5px;
+  margin-bottom: 14px;
   background: #ffffff;
   border: 1px solid #1B181E;
   border-radius: 4px;
-}
-#searchBox:focus {
+  margin-left: 4px;
+  margin-right: 4px;
   outline: 2px solid rgb(140, 130, 240);
   outline-offset: 2px;       /* Optional: Adds space between the outline and the element */
+}
+#searchBox:focus {
+  
+  outline: 2px solid rgb(140, 130, 240);
 }
 
 /* Filters and Suggestions */
 #search-section {
-  margin-bottom: 20px;
+  margin-bottom: 0px;
 }
 #filter-container {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin: 10px 0;
+  margin: 0px 0;
   margin-bottom: 12px;
 }
 #filter-container:empty {
-  gap: 10px;
   margin: 0px;
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 .filter-tag {
   background-color: rgb(140, 130, 240);
@@ -76,7 +92,12 @@ body {
 #suggestions {
   display: flex;
   flex-wrap: wrap;
+  margin-bottom: 12px;
   gap: 10px;
+}
+#suggestions:empty {
+  margin: 0px;
+  margin-bottom: 0px;
 }
 .suggestion {
   padding: 5px 10px;
@@ -93,7 +114,7 @@ body {
 #itemList {
   list-style: none;
   padding: 0;
-  margin-top: 10px;
+  margin-top: 11px;
 }
 
 /* Desktop View - Single Row Layout */
@@ -109,7 +130,7 @@ body {
     padding: 10px;
     border: 1px solid #ffffff;
     border-radius: 4px;
-    margin-bottom: 5px;
+    /* margin-bottom: 5px; */
     min-width: 978px;
     max-width: 978px;
     font-weight: bold;
