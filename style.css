@@ -18,18 +18,16 @@ body {
   max-width: 1000px;
   min-width: 400px;
   min-height: 100vh;
-  max-height: 100vh;
   background: #171619;
   margin: auto;
   padding-bottom: 5px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-#page-title {
+h1 {
   /* background-color: green; */
   margin-top: 0px;
   margin-bottom: 14px;
-  font-size: calc(0.6vw + 24px);
 }
 
 .colorful-text span {
@@ -84,10 +82,21 @@ body {
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
+  border: 2px solid rgb(140, 130, 240);
+  animation: newfilteranim 1s ease-in-out;
+}
+@keyframes newfilteranim {
+  0% { color: rgb(240, 230, 140); }
+  100% { color: rgb(255, 255, 255); }
 }
 .filter-tag:hover {
   background-color: #4e4e4e;
+  border: 2px solid #4e4e4e;
   text-decoration: line-through;
+}
+.filter-tag img {
+  margin-left: -3px;
+  margin-right: 5px;
 }
 #suggestions {
   display: flex;
@@ -119,6 +128,15 @@ body {
 
 /* Desktop View - Single Row Layout */
 @media (min-width: 769px) {
+  h1 {
+    font-size: 34px;
+  }
+  #title-img {
+    width: 31px;
+    height: 30px;
+    margin-right: -4px;
+    margin-bottom: -2px;
+  }
   .container {
     padding: 20px;
     padding-top: 10px;
@@ -133,6 +151,7 @@ body {
     /* margin-bottom: 5px; */
     min-width: 978px;
     max-width: 978px;
+    height: 36px;
     font-weight: bold;
     background-color: #151019;
   }
@@ -182,6 +201,15 @@ body {
 /* Mobile View - Double Row Layout */
 /* My phone is 414px by 763px */
 @media (max-width: 768px) {
+  h1 {
+    font-size: 20px;
+  }
+  #title-img {
+    width: 20px;
+    height: 18px;
+    margin-right: -2px;
+    margin-bottom: -1px;
+  }
   .container {
     padding: 5px;
     padding-top: 10px;
@@ -251,13 +279,13 @@ body {
   align-items: center;
   text-align: center;
   padding: 0 0px;
-  /* outline: 1px solid red; */
+  outline: 1px solid red;
 }
 .item-column {
   align-items: center;
   text-align: center;
   padding: 0 0px;
-  /* outline: 1px solid red; */
+  outline: 1px solid red;
 }
 
 #itemList li:nth-child(odd) {

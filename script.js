@@ -13,6 +13,8 @@
 
 const itemList = document.getElementById('itemList');
 const searchBox = document.getElementById('searchBox');
+const pageTitle = document.getElementById('page-title');
+const titleimg = document.getElementById('title-img');
 searchBox.focus();
 const headerContainer = document.getElementById("header-container");
 const filterContainer = document.getElementById("filter-container");
@@ -28,7 +30,7 @@ let filteredItems = null;
 
 // Set up the header columns
 let headerColumns = [];
-const headerNames = ['Dex', 'Shiny', 'Species', 'Types', 'Abilities', 'Egg Moves', 'Cost', 'BST', 'HP', 'Atk', 'Def', 'SpA', 'SpD', 'Spe'];
+const headerNames = ['Dex', '', 'Species', 'Types', 'Abilities', 'Egg Moves', 'Cost', 'BST', 'HP', 'Atk', 'Def', 'SpA', 'SpD', 'Spe'];
 const sortAttributes = ['rowno', null, 'spec', 'type1', 'ab1', 'moves', 'cost', 'bst', 'hp', 'atk', 'def', 'spa', 'spd', 'spe'];
 headerNames.forEach((thisHeaderName, index) => {
   const newColumn = document.createElement('div');
@@ -71,8 +73,8 @@ function refreshAllItems() {
   showMoveLearn = [null, null]
   if (lockedFilters.length > 0) {
     lockedFilters.forEach(thisLockedFID => { // Apply the locked filters
-      filteredItems = filteredItems.filter(item => thisLockedFID in item )
-      if (fidToCategory(thisLockedFID) == "Move") { // Search for moves with their designated dict key
+      filteredItems = filteredItems.filter(item => thisLockedFID in item ) // Search for filters with their fid as key
+      if (fidToCategory(thisLockedFID) == "Move") { 
         if (showMoveLearn[0] == null) {
           showMoveLearn[0] = thisLockedFID;
         } else if (showMoveLearn[1] == null) {
@@ -88,9 +90,16 @@ function refreshAllItems() {
   if (sortState.column) {
     if (sortState.column == 'moves') {
       filteredItems.sort((a, b) => {
-        // let learnLevel = 
-        if (a[sortState.column] < b[sortState.column]) return sortState.ascending ? -1 : 1;
-        if (a[sortState.column] > b[sortState.column]) return sortState.ascending ? 1 : -1;
+        let learnLevel = [0, 0] // [a,b]
+        showMoveLearn.forEach(thisMove => {
+          if (thisMove != null) {
+            learnLevel[0] += a[thisMove];
+            learnLevel[1] += b[thisMove];
+          }
+        });
+        // console.log(learnLevel);
+        if (learnLevel[0] < learnLevel[1]) return sortState.ascending ? -1 : 1;
+        if (learnLevel[0] > learnLevel[1]) return sortState.ascending ? 1 : -1;
         return 0;
       });
     } else {
@@ -154,7 +163,7 @@ function renderMoreItems() {
         let source = item[showMoveLearn[i]];
         let sourceText = 'fail';
         if (source == -1) {sourceText = '<p style="color:rgb(240, 173, 131); margin: 0;">Memory</p></b>'}
-        else if (source == 0) {sourceText = '<p style="color:rgb(240, 131, 131); margin: 0;">Evolution</p></b>'}
+        else if (source == 0) {sourceText = '<p style="color:rgb(131, 182, 239); margin: 0;">Evolution</p></b>'}
         else if (source == 201) {sourceText = '<p style="color:rgb(255, 255, 255); margin: 0;">Egg Move</p></b>'}
         else if (source == 202) {sourceText = '<p style="color:rgb(240, 230, 140); margin: 0;">Rare Egg Move</p></b>'}
         else if (source == 203) {sourceText = '<p style="color:rgb(255, 255, 255); margin: 0;">Common TM</p></b>'}
@@ -227,38 +236,38 @@ function displaySuggestions() {
   const query = searchBox.value.toLowerCase().replace(/\s+/g, '');
   // Filter suggestions based on query and exclude already locked filters
   let matchingFID = [];
-    matchingFID = possibleFID.filter(
-      (fid) => fidToName[fid].toLowerCase().replace(/\s+/g, '').includes(query) // Contains the search query and is not already locked
-            && !lockedFilters.some((f) => f == fid));
+  matchingFID = possibleFID.filter(
+    (fid) => fidToName[fid].toLowerCase().replace(/\s+/g, '').includes(query) // Contains the search query and is not already locked
+          && !lockedFilters.some((f) => f == fid));
+  suggestionPreview = null;
+  // Erase the list of suggestions if it is too large 
+  if (matchingFID.length > 20) {
+    matchingFID = [];
+  } 
+  
+  // If there is at least one locked filter, remove suggestions that have no matches
+  if (lockedFilters.length > 0) {
+  // Sort the list of suggestions based on hits in the item list (but still by type/ability/move)
+  // (If there are no locked filters, the list is already presorted)
+  
+  }
+  // Apply the first suggestion to the preview filter
+  if (matchingFID.length > 0) {suggestionPreview = matchingFID[0]} 
 
-    // Erase the list of suggestions if it is too large 
-    if (matchingFID.length > 20) {
-      matchingFID = [];
-      suggestionPreview = null; } 
-    
-    // If there is at least one locked filter, remove suggestions that have no matches
-    if (lockedFilters.length > 0) {
-    // Sort the list of suggestions based on hits in the item list (but still by type/ability/move)
-    // (If there are no locked filters, the list is already presorted)
-    
-    }
-    // Apply the first suggestion to the preview filter
-    if (matchingFID.length > 0) {suggestionPreview = matchingFID[0]} 
+  // Remove filter preview if there are no matching suggestions
 
-    // Remove filter preview if there are no matching suggestions
-
-    suggestions.innerHTML = matchingFID.map( (fid) => {
-        let suggColor = 'rgb(255, 255, 255)' // Default color for type
-        if (fidToCategory(fid) == 'Ability') { suggColor = 'rgb(140, 130, 240)'; }
-        if (fidToCategory(fid) == 'Move')    { suggColor = 'rgb(145, 145, 145)'; }
-        return `<span class="suggestion" fid="${fid}"
-                          style="${(fidToCategory(fid) == 'Type' ? 'color:'+typeColors[fidToName[fid]]+'; ':'')} margin: 0;">
-                          <span class="suggestion-category" style="color:${suggColor};">
-                          ${fidToCategory(fid)}: </span>${fidToName[fid]}</span>`  
-      }).join("");
-      // Add click event to suggestions
-      document.querySelectorAll(".suggestion").forEach((el) => el.addEventListener("click", () =>
-          lockFilter(el.getAttribute("fid"))
+  suggestions.innerHTML = matchingFID.map( (fid) => {
+    let suggColor = 'rgb(255, 255, 255)' // Default color for type
+    if (fidToCategory(fid) == 'Ability') { suggColor = 'rgb(140, 130, 240)'; }
+    if (fidToCategory(fid) == 'Move')    { suggColor = 'rgb(145, 145, 145)'; }
+    return `<span class="suggestion" fid="${fid}"
+                      style="${(fidToCategory(fid) == 'Type' ? 'color:'+typeColors[fidToName[fid]]+'; ':'')} margin: 0;">
+                      <span class="suggestion-category" style="color:${suggColor};">
+                      ${fidToCategory(fid)}: </span>${fidToName[fid]}</span>`  
+  }).join("");
+  // Add click event to suggestions
+  document.querySelectorAll(".suggestion").forEach((el) => el.addEventListener("click", () =>
+      lockFilter(el.getAttribute("fid"))
     )
   );
 }
@@ -270,17 +279,22 @@ function lockFilter(newLockFID) {
     // Add the filter to the locked filters container
     const filterTag = document.createElement("span");
     filterTag.className = "filter-tag";
-    filterTag.innerHTML = `&#x1F50E;&#xFE0E; ${fidToCategory(newLockFID)}: ${fidToName[newLockFID]}`;
+    // filterTag.innerHTML = `&#x1F50E;&#xFE0E; ${fidToCategory(newLockFID)}: ${fidToName[newLockFID]}`;
+    const img = document.createElement('img'); img.src = 'images/lock.png'; filterTag.appendChild(img);
+    filterTag.innerHTML = filterTag.innerHTML + `${fidToCategory(newLockFID)}: ${fidToName[newLockFID]}`;
     filterTag.addEventListener("click", () => removeFilter(newLockFID, filterTag));
     filterContainer.appendChild(filterTag);
     // Refresh suggestions and items
     searchBox.value = ""; // Clear the search bar after locking
     displaySuggestions();
     refreshAllItems();
-    if (fidToCategory(newLockFID) === 'Move' && sortState.column === 'rowno') {
+    if (lockedFilters.length == 1 && fidToCategory(newLockFID) === 'Move' && sortState.column === 'rowno') {
       updateHeader(headerColumns[5]);
     } else {
-      updateHeader();
+      if (lockedFilters.length == 1 && sortState.column === 'moves') {
+        sortState.ascending = true;
+      }
+      updateHeader(null, true);
     }
   }
 }
@@ -292,14 +306,23 @@ function removeFilter(filterToRemove, filterTag) {
   // Refresh suggestions and items
   displaySuggestions();
   refreshAllItems();
-  if (sortState.column === 'moves') { updateHeader(headerColumns[5], true); } else { updateHeader(); }
+  if (sortState.column === 'moves' && !lockedFilters.some((f) => fidToCategory(f) == 'Move')) { 
+    updateHeader(headerColumns[0]); 
+  } else { 
+    updateHeader(null, true); 
+  }
+  if (lockedFilters.length == 0) {
+    pageTitle.classList.remove('colorful-text');
+    void pageTitle.offsetWidth;
+    pageTitle.classList.add('colorful-text');
+  }
   if (!isMobile) {searchBox.focus();}
 }
 
 // Event function for the header row - Clicking on the header row to sort ***************
 function updateHeader(clickTarget = null, ignoreFlip = false) {
   if (clickTarget == null) {clickTarget = currentTarget; ignoreFlip = true;}
-  console.log(clickTarget?.sortattr)
+  // console.log(clickTarget?.sortattr)
   if (showMoveLearn[0] != null) {
     headerColumns[5].textDef = '<p style="display: inline; color:rgb(140, 130, 240); margin: 0;">' 
                              + (isMobile ? 'Moves' : 'Filtered Moves');
@@ -334,6 +357,7 @@ function adjustLayout() {
   const width = window.innerWidth;
   isMobile = (width <= 768);
   console.log((width <= 768 ? "Mobile layout" : "Desktop layout"), width, isMobile);
+  titleimg.src = (isMobile ? 'images/mag18.png' : 'images/mag30.png' );
   // Redraw all the header columns into the header container
   headerContainer.innerHTML = '';
   const thisRow = document.createElement('div'); thisRow.className = 'header-row';
@@ -356,7 +380,7 @@ function adjustLayout() {
 
 // Load more items on scroll
 window.addEventListener("scroll", () => {
-  console.log('scrolled')
+  // console.log('scrolled')
   const scrollTop = window.scrollY;
   const windowHeight = window.innerHeight;
   const documentHeight = document.body.scrollHeight;
