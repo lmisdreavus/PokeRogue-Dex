@@ -246,6 +246,8 @@ h1 {
     align-items: center; /* Center items vertically */
     justify-content: space-between; /* Evenly space the columns */
     padding: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
     border: 1px solid #ffffff;
     margin-bottom: 5px;
     border-radius: 4px;
