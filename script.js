@@ -39,7 +39,7 @@ headerNames.forEach((thisHeaderName, index) => {
   newColumn.sortattr = sortAttributes[index];
   newColumn.textDef = thisHeaderName;
   newColumn.className = 'header-column';
-  if (thisHeaderName == 'Egg Moves') {newColumn.id = 'headermovecolumn';}
+  // if (thisHeaderName == 'Egg Moves') {newColumn.id = 'headermovecolumn';}
   newColumn.width = 40;
   newColumn.addEventListener('click', () => {updateHeader(newColumn)} );
   headerColumns.push(newColumn); // Push the column element into the array
@@ -346,7 +346,7 @@ function updateHeader(clickTarget = null, ignoreFlip = false) {
       }
     }
     currentTarget = clickTarget; // Draw arrow on new target
-    clickTarget.innerHTML = clickTarget.textDef + '<br><p style="color:rgb(140, 130, 240); margin: 0;">' + (sortState.ascending ? "▲" : "▼") + '</p>';
+    clickTarget.innerHTML = clickTarget.textDef + '<br><p style="color:rgb(140, 130, 240); margin: 0; font-family: serif;">' + (sortState.ascending ? "&#9650;" : "&#9660;") + '</p>';
   }
   // Update the display
   displaySuggestions();

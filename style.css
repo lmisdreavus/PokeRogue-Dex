@@ -3,13 +3,16 @@ html {
   font-size: 16px;
 }
 body {
-  font-family: Arial, sans-serif;
+  /* font-family: Arial, sans-serif; */
   background-color: #0E0C0F;
   margin: 0px;
   padding: 0px;
   width: 100vw;
   min-height: 100vh;
   max-height: 100vh;
+}
+div {
+  line-height: 1.125;
 }
 .container {
   display: flex;
@@ -38,8 +41,6 @@ h1 {
 @keyframes colorChange {
   0% { color: rgb(255, 255, 255); }
   50% { color: rgb(140, 130, 240); }
-  /* 50% { color: rgb(255, 255, 255); } */
-  /* 75% { color: rgb(240, 230, 140); } */
   100% { color: rgb(255, 255, 255); }
 }
 
@@ -55,10 +56,9 @@ h1 {
   outline: 2px solid rgb(140, 130, 240);
   outline-offset: 2px;       /* Optional: Adds space between the outline and the element */
 }
-#searchBox:focus {
-  
+/* #searchBox:focus {
   outline: 2px solid rgb(140, 130, 240);
-}
+} */
 
 /* Filters and Suggestions */
 #search-section {
@@ -281,13 +281,14 @@ h1 {
   align-items: center;
   text-align: center;
   padding: 0 0px;
-  outline: 1px solid red;
+  /* outline: 1px solid red; */
+  line-height: 1.125;
 }
 .item-column {
   align-items: center;
   text-align: center;
   padding: 0 0px;
-  outline: 1px solid red;
+  /* outline: 1px solid red; */
 }
 
 #itemList li:nth-child(odd) {
