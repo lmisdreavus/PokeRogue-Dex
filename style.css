@@ -159,14 +159,13 @@ h1 {
     display: grid;
     align-items: center;
     text-align: center;
-    display: grid;
     gap: 10px;
     height: 36px;
     cursor: pointer;
     /* outline: 1px solid red; */
   }
   .header-row:first-child {
-    grid-template-columns: 0.8fr 55px 2fr 1fr 2.5fr 2.5fr 0.7fr repeat(7, 0.5fr);
+    grid-template-columns: 48px 55px 2fr 64px 2.5fr 2.5fr 0.7fr repeat(7, 0.5fr);
   }
   #itemList li {
     align-items: center;
@@ -183,14 +182,14 @@ h1 {
     max-width: 978px;
   }
   .row {
+    display: grid;
     align-items: center;
     text-align: center;
-    display: grid;
     gap: 10px;
     /* outline: 1px solid red; */
   }
   .row:first-child {
-    grid-template-columns: 0.8fr 0.5fr 2fr 1fr 2.5fr 2.5fr 0.7fr repeat(7, 0.5fr);
+    grid-template-columns: 48px 55px 2fr 64px 2.5fr 2.5fr 0.7fr repeat(7, 0.5fr);
   }
   #itemList li img {
     margin-right: -15px;
@@ -230,7 +229,7 @@ h1 {
     align-items: center;
     text-align: center;
     display: grid;
-    gap: 10px;
+    gap: 5px;
     width: 100%;
     height: 36px;
     cursor: pointer;
@@ -240,7 +239,7 @@ h1 {
     grid-template-columns: 0.5fr 0.5fr 1fr 1fr 1.4fr;
   }
   .header-row:last-child {
-    grid-template-columns: 64px repeat(8, 0.5fr);
+    grid-template-columns: 64px 43px repeat(7, 0.5fr);
   }
   #itemList li {
     align-items: center; /* Center items vertically */
@@ -258,7 +257,7 @@ h1 {
     align-items: center; /* Center items vertically */
     text-align: center;
     display: grid;
-    gap: 10px; /* Spacing between columns */
+    gap: 5px; /* Spacing between columns */
     /* outline: 1px solid red; */
   }
   .row:first-child {
@@ -273,15 +272,20 @@ h1 {
     gap: 0px;
   }
   .row:last-child {
-    grid-template-columns: 64px repeat(8, 0.5fr);
+    grid-template-columns: 64px 43px repeat(7, 0.5fr);
   }
 }
 
 .header-column {
+  display: grid;
   align-items: center;
+  justify-content: center;
   text-align: center;
+  white-space: normal;
+  word-wrap: break-word;
   padding: 0 0px;
   /* outline: 1px solid red; */
+  min-height: 36px;
   line-height: 1.125;
 }
 .item-column {

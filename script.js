@@ -54,11 +54,11 @@ function refreshAllItems() {
   filteredItems = items;
   if (query.length > 0) {
     filteredItems = items.filter(item =>
-      item.spec.toLowerCase().includes(query) ||
-      item.ab1.toLowerCase().includes(query) ||
-      item.ab2.toLowerCase().includes(query) ||
-      item.hab.toLowerCase().includes(query) ||
-      item.pas.toLowerCase().includes(query) ||
+      item.spec.toLowerCase().replace(/\s+/g, '').includes(query) ||
+      item.ab1.toLowerCase().replace(/\s+/g, '').includes(query) ||
+      item.ab2.toLowerCase().replace(/\s+/g, '').includes(query) ||
+      item.hab.toLowerCase().replace(/\s+/g, '').includes(query) ||
+      item.pas.toLowerCase().replace(/\s+/g, '').includes(query) ||
       item.type1.toLowerCase().includes(query) ||
       item.type2.toLowerCase().includes(query) ||
       item.dexno.toString().includes(query)
@@ -79,10 +79,7 @@ function refreshAllItems() {
           showMoveLearn[0] = thisLockedFID;
         } else if (showMoveLearn[1] == null) {
           showMoveLearn[1] = thisLockedFID;
-        }
-        // if (!showMoveLearn && moveToLearn == null) {moveToLearn = moveName; showMoveLearn = true; 
-        //   // sortState.column = moveName;
-        // }        
+        }       
       }
     })
   }
@@ -97,7 +94,6 @@ function refreshAllItems() {
             learnLevel[1] += b[thisMove];
           }
         });
-        // console.log(learnLevel);
         if (learnLevel[0] < learnLevel[1]) return sortState.ascending ? -1 : 1;
         if (learnLevel[0] > learnLevel[1]) return sortState.ascending ? 1 : -1;
         return 0;
@@ -125,12 +121,6 @@ function renderMoreItems() {
     const dexColumn = document.createElement('div');
     dexColumn.className = 'item-column';
     dexColumn.innerHTML = '<b><a href="https://wiki.pokerogue.net/pokedex:' + item.dexno + '" target="_blank">#' + item.dexno + '</a></b>';
-    // if (showMoveLearn) {
-    //   let dexHeader = document.querySelector('.header-container span')
-    //   dexHeader.innerHTML = 'Move'+'<br><p style="color:rgb(140, 130, 240); margin: 0;">' + (sortState.ascending ? "▲" : "▼") + '</p>';
-    //   dexColumn.innerHTML = '<b>' + item[sortState.column] + '</b>';
-    // } else {
-    // }
     
     const img = document.createElement('img');
     img.src = item.img;
@@ -356,7 +346,7 @@ function updateHeader(clickTarget = null, ignoreFlip = false) {
 function adjustLayout() {
   const width = window.innerWidth;
   isMobile = (width <= 768);
-  console.log((width <= 768 ? "Mobile layout" : "Desktop layout"), width, isMobile);
+  // console.log((isMobile ? "Mobile layout" : "Desktop layout"), width, isMobile);
   titleimg.src = (isMobile ? 'images/mag18.png' : 'images/mag30.png' );
   // Redraw all the header columns into the header container
   headerContainer.innerHTML = '';
@@ -384,7 +374,6 @@ window.addEventListener("scroll", () => {
   const scrollTop = window.scrollY;
   const windowHeight = window.innerHeight;
   const documentHeight = document.body.scrollHeight;
-  // renderMoreItems();
   if (window.scrollY + window.innerHeight >= document.body.scrollHeight * 0.8 - 1000) {
     renderMoreItems();
   }
@@ -393,8 +382,6 @@ window.addEventListener("scroll", () => {
 // Initial display
 adjustLayout();
 updateHeader(headerColumns[0]);
-// displaySuggestions();
-// refreshAllItems();
 
 // Run on page load and when resizing the window
 window.addEventListener("resize", () => { 
@@ -404,14 +391,12 @@ window.addEventListener("resize", () => {
   updateHeader();
 });
 searchBox.addEventListener('input', () => { // Typing in search box ***************
-  // if (searchBox.value.length > 1) {
-    displaySuggestions();
-    refreshAllItems();
-  // }
+  displaySuggestions();
+  refreshAllItems();
 });
 document.addEventListener('keydown', (event) => {
   // Ignore certain keys like Tab, Shift, Control, Alt, etc.
-  const ignoredKeys = ["Tab", "Shift", "Control", "Alt", "Meta", "CapsLock", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+  const ignoredKeys = ["Tab", "Shift", "PageDown", "PageUp", "Control", "Alt", "Meta", "CapsLock", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
   if (!ignoredKeys.includes(event.key)) {
     searchBox.focus();
   }
