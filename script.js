@@ -123,7 +123,7 @@ function renderMoreItems() {
     dexColumn.innerHTML = '<b><a href="https://wiki.pokerogue.net/pokedex:' + item.dexno + '" target="_blank">#' + item.dexno + '</a></b>';
     
     const img = document.createElement('img');
-    img.src = item.img;
+    img.src = `${item.img}.png`;
     img.alt = item.dexno;
     img.className = 'item-image';
 
