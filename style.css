@@ -28,7 +28,6 @@ div {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 h1 {
-  /* background-color: green; */
   margin-top: 0px;
   margin-bottom: 14px;
 }
@@ -54,11 +53,8 @@ h1 {
   margin-left: 4px;
   margin-right: 4px;
   outline: 2px solid rgb(140, 130, 240);
-  outline-offset: 2px;       /* Optional: Adds space between the outline and the element */
+  outline-offset: 2px;
 }
-/* #searchBox:focus {
-  outline: 2px solid rgb(140, 130, 240);
-} */
 
 /* Filters and Suggestions */
 #search-section {
@@ -67,7 +63,8 @@ h1 {
 #filter-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  column-gap: 0px;
+  row-gap: 10px;
   margin: 0px 0;
   margin-bottom: 12px;
 }
@@ -88,6 +85,20 @@ h1 {
 @keyframes newfilteranim {
   0% { color: rgb(240, 230, 140); }
   100% { color: rgb(255, 255, 255); }
+}
+.filter-mod {
+  background-color: #0E0C0F;
+  color: rgb(255, 255, 255);
+  padding: 2px 3px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  height: 13px;
+  min-width: 25px;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 .filter-tag:hover {
   background-color: #4e4e4e;
@@ -148,7 +159,6 @@ h1 {
     padding: 10px;
     border: 1px solid #ffffff;
     border-radius: 4px;
-    /* margin-bottom: 5px; */
     min-width: 978px;
     max-width: 978px;
     height: 36px;
@@ -165,7 +175,7 @@ h1 {
     /* outline: 1px solid red; */
   }
   .header-row:first-child {
-    grid-template-columns: 48px 55px 2fr 64px 2.5fr 2.5fr 0.7fr repeat(7, 0.5fr);
+    grid-template-columns: 45px 87px 2fr 64px 2.5fr 2.5fr 0.7fr repeat(7, 0.5fr);
   }
   #itemList li {
     align-items: center;
@@ -189,11 +199,16 @@ h1 {
     /* outline: 1px solid red; */
   }
   .row:first-child {
-    grid-template-columns: 48px 55px 2fr 64px 2.5fr 2.5fr 0.7fr repeat(7, 0.5fr);
+    grid-template-columns: 45px 87px 2fr 64px 2.5fr 2.5fr 0.7fr repeat(7, 0.5fr);
   }
-  #itemList li img {
-    margin-right: -15px;
-    margin-left: -10px;
+  .star-img {
+    margin: 0px;
+    width: 13px;
+    height: 18px;
+    margin-top: 8px;
+    object-fit:none;
+    cursor: pointer;
+    /* outline: 1px solid red; */
   }
 }
 
@@ -236,7 +251,7 @@ h1 {
     /* outline: 1px solid red; */
   }
   .header-row:first-child {
-    grid-template-columns: 0.5fr 0.5fr 1fr 1fr 1.4fr;
+    grid-template-columns: 64px 43px 1.12fr 1.1fr 1.4fr;
   }
   .header-row:last-child {
     grid-template-columns: 64px 43px repeat(7, 0.5fr);
@@ -245,7 +260,7 @@ h1 {
     align-items: center; /* Center items vertically */
     justify-content: space-between; /* Evenly space the columns */
     padding: 10px;
-    padding-top: 5px;
+    padding-top: 3px;
     padding-bottom: 5px;
     border: 1px solid #ffffff;
     margin-bottom: 5px;
@@ -261,32 +276,43 @@ h1 {
     /* outline: 1px solid red; */
   }
   .row:first-child {
-    /* grid-template-columns: 0.5fr 0.5fr 2fr 1.5fr 2.5fr; */
-    grid-template-columns: 1fr 4fr;
-    margin-bottom: 7px;
+    grid-template-columns: 45px 45px 1fr 16px;
+    margin-bottom: 9px;
+    max-height: 18px;
     /* background-color: #201925;   */
   }
   .row:nth-child(2) {
     grid-template-columns: 0.5fr 2fr 2fr;
     margin-bottom: 7px;
     gap: 0px;
+    max-height: 72px;
   }
   .row:last-child {
     grid-template-columns: 64px 43px repeat(7, 0.5fr);
+    max-height: 36px;
+  }
+  .star-img {
+    margin: 0px;
+    width: 15px;
+    height: 18px;
+    margin-top: 2px;
+    object-fit:none;
+    cursor: pointer;
+    /* outline: 1px solid red; */
   }
 }
 
 .header-column {
   display: grid;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
+  /* white-space: normal; */
   text-align: center;
-  white-space: normal;
   word-wrap: break-word;
   padding: 0 0px;
-  /* outline: 1px solid red; */
   min-height: 36px;
   line-height: 1.125;
+  /* outline: 1px solid red; */
 }
 .item-column {
   align-items: center;
@@ -299,10 +325,29 @@ h1 {
   background-color: #252129; /* Alternate row color */
 }
 
-#itemList li img {
-  width: 80px; 
-  height: 72px; 
-  border-radius: 0%; 
+.pin-img {
+  margin: 0px;
+  width: 11px;
+  height: 11px;
+  margin-bottom: 7px;
+  /* cursor: pointer; */
+}
+.star-header {
+  margin: auto;
+  width: 18px;
+  height: 18px;
+  object-fit: none;
+  /* outline: 1px solid red; */
+}
+
+.item-image {
+  width: 117px; 
+  height: 82px; 
+  margin-right: -15px;
+  margin-left: -10px;
+  margin-top: -5px;
+  margin-bottom: -5px;
+  border-radius: 4px; 
   object-fit:none;
   /* outline: 1px solid red; */
 }

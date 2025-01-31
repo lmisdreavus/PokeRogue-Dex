@@ -1,13 +1,6 @@
 // script.js
+// Imports: items, fidToName, typeColors
 
-// Imported items, possibleFilters, typeColors
-// const possibleFilters = [ // Imported from file, this is for reference
-//   {categ:'Type', value:'Bug'},
-//   {categ:'Ability', value:'Chlorophyll'},
-//   {categ:'Move', value:moveIDnum},
-// ];
-
-// do fid and fidtoname
 // do big and variant sprites
 // fix move display source
 
@@ -20,26 +13,29 @@ const headerContainer = document.getElementById("header-container");
 const filterContainer = document.getElementById("filter-container");
 const suggestions = document.getElementById("suggestions");
 const possibleFID = [...Array(1154).keys()];
-let renderLimit = 0; // Start with no items
 const increment = 50; // Number of items to load at a time
-let showMoveLearn = [null, null]; // Whether to show the sources of a filtered move
+let renderLimit = 0; // Start with no items
+let showMoveLearn = []; // Filtered moves to show the sources of
 let suggestionPreview = null;
 let lockedFilters = [];
+let lockedFilterGroups = [[]];
+let lockedFilterMods = [];
+let lockedOR = []; // 0 for AND, 1 for OR
 let isMobile = false;
 let filteredItems = null;
+let shinyState = 0;
 
 // Set up the header columns
 let headerColumns = [];
-const headerNames = ['Dex', '', 'Species', 'Types', 'Abilities', 'Egg Moves', 'Cost', 'BST', 'HP', 'Atk', 'Def', 'SpA', 'SpD', 'Spe'];
-const sortAttributes = ['rowno', null, 'spec', 'type1', 'ab1', 'moves', 'cost', 'bst', 'hp', 'atk', 'def', 'spa', 'spd', 'spe'];
+const headerNames = ['Dex', 'Shiny', 'Species', 'Types', 'Abilities', 'Egg Moves', 'Cost', 'BST', 'HP', 'Atk', 'Def', 'SpA', 'SpD', 'Spe'];
+const sortAttributes = ['rowno', 'shiny', 'spec', 'type1', 'ab1', 'moves', 'cost', 'bst', 'hp', 'atk', 'def', 'spa', 'spd', 'spe'];
 headerNames.forEach((thisHeaderName, index) => {
   const newColumn = document.createElement('div');
-  if (thisHeaderName == '') {const img = document.createElement('img'); img.src = 'images/headerblank.png'; newColumn.appendChild(img);
+  if (thisHeaderName == '') {const img = document.createElement('img'); img.src = 'ui/headerblank.png'; newColumn.appendChild(img);
                      } else {newColumn.innerHTML = thisHeaderName; }
   newColumn.sortattr = sortAttributes[index];
   newColumn.textDef = thisHeaderName;
   newColumn.className = 'header-column';
-  // if (thisHeaderName == 'Egg Moves') {newColumn.id = 'headermovecolumn';}
   newColumn.width = 40;
   newColumn.addEventListener('click', () => {updateHeader(newColumn)} );
   headerColumns.push(newColumn); // Push the column element into the array
@@ -49,11 +45,15 @@ let currentTarget = null; // Track current sorted column
 
 // Display items based on query and locked filters
 function refreshAllItems() {
+  // console.log('Refreshing all items');
   const query = searchBox.value.toLowerCase().replace(/\s+/g, '');
   itemList.innerHTML = ""; // Clear existing items
   filteredItems = items;
-  if (query.length > 0) {
-    filteredItems = items.filter(item =>
+  if (shinyState) { // Only show items that have that tier of shiny
+    filteredItems = filteredItems.filter(item => item.shvar >= shinyState);
+  }
+  if (query.length > 0) { // Only show items that match the query
+    filteredItems = filteredItems.filter(item =>
       item.spec.toLowerCase().replace(/\s+/g, '').includes(query) ||
       item.ab1.toLowerCase().replace(/\s+/g, '').includes(query) ||
       item.ab2.toLowerCase().replace(/\s+/g, '').includes(query) ||
@@ -62,44 +62,33 @@ function refreshAllItems() {
       item.type1.toLowerCase().includes(query) ||
       item.type2.toLowerCase().includes(query) ||
       item.dexno.toString().includes(query)
-      // || suggestionPreview?.value.trim().toLowerCase().replace(/\s+/g, '') in item 
-      // || suggestionPreview.some((p) => p.value in item)
   );}
-  // if (query.length === 1) { // Prefilter
-  //     let uu = 'groupA';
-  //     filteredItems = items.filter((_, index) => dictOfSets[uu].has(index))
-  //     console.log(query.length)
-  // }
-  showMoveLearn = [null, null]
   if (lockedFilters.length > 0) {
-    lockedFilters.forEach(thisLockedFID => { // Apply the locked filters
-      filteredItems = filteredItems.filter(item => thisLockedFID in item ) // Search for filters with their fid as key
-      if (fidToCategory(thisLockedFID) == "Move") { 
-        if (showMoveLearn[0] == null) {
-          showMoveLearn[0] = thisLockedFID;
-        } else if (showMoveLearn[1] == null) {
-          showMoveLearn[1] = thisLockedFID;
-        }       
+    filteredItems = filteredItems.filter(item => 
+      lockedFilterGroups.every(thisGroup => 
+        thisGroup.some(thisLockedFID => thisLockedFID in item))) // Search for filters with their fid as key
       }
-    })
-  }
+  showMoveLearn = [];
+  lockedFilters.forEach(thisLockedFID => { // Add moves to track in the move column
+    if (fidToCategory(thisLockedFID) == "Move") { 
+      showMoveLearn.push(thisLockedFID);
+    }
+  });
   // Sort items if a column is specified
   if (sortState.column) {
     if (sortState.column == 'moves') {
-      filteredItems.sort((a, b) => {
+      filteredItems.sort((a, b) => { // Sort by source of moves
         let learnLevel = [0, 0] // [a,b]
         showMoveLearn.forEach(thisMove => {
-          if (thisMove != null) {
-            learnLevel[0] += a[thisMove];
-            learnLevel[1] += b[thisMove];
-          }
+          learnLevel[0] += (thisMove in a ? a[thisMove] : 500 ); // Add 500 if can't learn
+          learnLevel[1] += (thisMove in b ? b[thisMove] : 500 );
         });
         if (learnLevel[0] < learnLevel[1]) return sortState.ascending ? -1 : 1;
         if (learnLevel[0] > learnLevel[1]) return sortState.ascending ? 1 : -1;
         return 0;
       });
     } else {
-      filteredItems.sort((a, b) => {
+      filteredItems.sort((a, b) => { // Sort by other attribute
         if (a[sortState.column] < b[sortState.column]) return sortState.ascending ? -1 : 1;
         if (a[sortState.column] > b[sortState.column]) return sortState.ascending ? 1 : -1;
         return 0;
@@ -112,31 +101,85 @@ function refreshAllItems() {
 }
 
 function renderMoreItems() {
+  // console.log('Rendering more items');
   renderLimit += increment;
   let slicedItems = filteredItems.slice(renderLimit-increment,renderLimit)
   slicedItems.forEach((item, index) => { // Generate each list item dynamically
     const li = document.createElement('li'); // Entry of one Pokemon
     
     // Create each column and set its text
-    const dexColumn = document.createElement('div');
-    dexColumn.className = 'item-column';
-    dexColumn.innerHTML = '<b><a href="https://wiki.pokerogue.net/pokedex:' + item.dexno + '" target="_blank">#' + item.dexno + '</a></b>';
-    
-    const img = document.createElement('img');
-    img.src = `${item.img}.png`;
-    img.alt = item.dexno;
-    img.className = 'item-image';
 
-    const specColumn = document.createElement('div');
+    const pokeImg = document.createElement('img'); // Show image of the pokemon
+    pokeImg.src = `images/${item.img}_${shinyState}.png`;        // The image can be replaced with shiny sprites
+    pokeImg.shinyOverride = -1;
+    pokeImg.stars = [];
+    // pokeImg.alt = '';
+    pokeImg.className = 'item-image';
+
+    const dexColumn = document.createElement('div'); // Create the dex column, with stars and pin only on desktop
+    dexColumn.className = 'item-column';
+    // if (isMobile) {
+      const starColumn = document.createElement('div');
+      starColumn.className = 'item-column';
+      const pinColumn = document.createElement('div');
+      pinColumn.className = 'item-column';
+    // }
+    const pinImg = document.createElement('img');
+    pinImg.src = 'ui/pin.png';
+    pinImg.className = 'pin-img';
+    if (isMobile) {
+      pinColumn.appendChild(pinImg);
+      dexColumn.innerHTML = '<b><a href="https://wiki.pokerogue.net/pokedex:' + item.dexno + '" target="_blank">#' + item.dexno + '</a></b><br>';
+    } else {
+      dexColumn.appendChild(pinImg);
+      dexColumn.innerHTML = dexColumn.innerHTML + '<br><b><a href="https://wiki.pokerogue.net/pokedex:' + item.dexno + '" target="_blank">#' + item.dexno + '</a></b><br>';
+    }
+    for (let i = 1; i < 4; i++) {
+      if (item.shvar >= i) {
+        const starImg = document.createElement('img');
+        starImg.className = 'star-img';
+        starImg.src = (shinyState == i ? `ui/shiny${i}.png` : `ui/shiny${i}g.png`);
+        starImg.addEventListener('click', () => { // Add click events to all the stars, changing the poke image
+          if (shinyState == i && pokeImg.shinyOverride == -1 || pokeImg.shinyOverride == i) {
+            pokeImg.shinyOverride = 0; // Remove global shiny state if same
+            pokeImg.src = `images/${item.img}_0.png`; 
+            pokeImg.stars.forEach((thisStar) => thisStar.src = 'ui/shiny1g.png');
+          } else { // Otherwise set the shiny override of this pokemon to the clicked star
+            pokeImg.shinyOverride = i;
+            pokeImg.src = `images/${item.img}_${i}.png`;  
+            pokeImg.stars.forEach((thisStar) => thisStar.src = 'ui/shiny1g.png');
+            starImg.src = `ui/shiny${i}.png`;
+          }
+        });
+        starImg.addEventListener('mouseover', () => {
+          starImg.src = `ui/shiny${i}.png`; // Set to the hover image
+        });
+        starImg.addEventListener('mouseout', () => {
+          if (pokeImg.shinyOverride == -1) { // If no override
+            starImg.src = (shinyState == i ? `ui/shiny${i}.png` : `ui/shiny${i}g.png`); // Revert to global shiny state
+          } else {
+            starImg.src = (pokeImg.shinyOverride == i ? `ui/shiny${i}.png` : `ui/shiny${i}g.png`);
+          }
+        });
+        pokeImg.stars.push(starImg);
+        if (isMobile) {
+          starColumn.appendChild(starImg);
+        } else {
+          dexColumn.appendChild(starImg);
+        }
+      }
+    }
+
+    const specColumn = document.createElement('div'); // Show species name
     specColumn.className = 'item-column';
     specColumn.innerHTML = '<b>' + item.spec + '</b>';
 
-    const typeColumn = document.createElement('div');
+    const typeColumn = document.createElement('div'); // Show both types
     typeColumn.className = 'item-column';
     typeColumn.innerHTML = '<p style="color:' + typeColors[item.type1] + '; margin: 0;"><b>' + item.type1 + '</p>' 
                          + '<p style="color:' + typeColors[item.type2] + '; margin: 0;">'    + item.type2 + '</b></p>';
 
-    const abilityColumn = document.createElement('div');
+    const abilityColumn = document.createElement('div'); // Show all four abilities
     abilityColumn.className = 'item-column';
     abilityColumn.innerHTML = '<b>' +
     '<p style="margin: 0;">' + item.ab1 + '</p>' +
@@ -144,13 +187,13 @@ function renderMoreItems() {
     '<p style="color:rgb(240, 230, 140); margin: 0;">' + item.hab + '</p>' +
     '<p style="color:rgb(140, 130, 240); margin: 0;">' + item.pas + '</p></b>';
 
-    const moveColumn = document.createElement('div'); // style="font-size:16px;""
-    moveColumn.className = 'item-column';
-    moveColumn.innerHTML = ''
-    for (const i of [0, 1]) {
-      if (showMoveLearn[i] != null) {
-
-        let source = item[showMoveLearn[i]];
+    // Show the column of egg moves, or filtered moves and their sources
+    const moveColumn = document.createElement('div');  moveColumn.className = 'item-column';  moveColumn.innerHTML = '';
+    let numMovesShown = 0;
+    showMoveLearn.forEach((thisMove) => {
+      if (thisMove in item && numMovesShown < 2) { 
+        numMovesShown += 1;
+        let source = item[thisMove];
         let sourceText = 'fail';
         if (source == -1) {sourceText = '<p style="color:rgb(240, 173, 131); margin: 0;">Memory</p></b>'}
         else if (source == 0) {sourceText = '<p style="color:rgb(131, 182, 239); margin: 0;">Evolution</p></b>'}
@@ -159,14 +202,14 @@ function renderMoreItems() {
         else if (source == 203) {sourceText = '<p style="color:rgb(255, 255, 255); margin: 0;">Common TM</p></b>'}
         else if (source == 204) {sourceText = '<p style="color:rgb(131, 182, 239); margin: 0;">Great TM</p></b>'}
         else if (source == 205) {sourceText = '<p style="color:rgb(240, 230, 140); margin: 0;">Ultra TM</p></b>'}
-        else {sourceText = '<p style="color:rgb(255, 255, 255); margin: 0;">Lv ' + item[showMoveLearn[i]] + '</p></b>'}
+        else {sourceText = '<p style="color:rgb(255, 255, 255); margin: 0;">Lv ' + item[thisMove] + '</p></b>'}
         moveColumn.innerHTML = moveColumn.innerHTML + '<p style="color:rgb(140, 130, 240); margin: 0;"><b>' 
-                             + fidToName[showMoveLearn[i]] + ':</p>' + sourceText;
-                            //  + item[lockedFilters[0].value.trim().toLowerCase().replace(/\s+/g, '')];
-      } else if (i == 0) {
-        moveColumn.innerHTML = '<p style="margin: 0;"><b>' + item.egg1 + '<br>' + item.egg2 + '<br>' + item.egg3 + '<br>' +
-                      '</p><p style="color:rgb(240, 230, 140); margin: 0;">' + item.egg4 + '</p></b>';
+                             + fidToName[thisMove] + ':</p>' + sourceText;
       }
+    });
+    if (showMoveLearn.length == 0) {
+      moveColumn.innerHTML = '<p style="margin: 0;"><b>' + item.egg1 + '<br>' + item.egg2 + '<br>' + item.egg3 + '<br>' +
+                    '</p><p style="color:rgb(240, 230, 140); margin: 0;">' + item.egg4 + '</p></b>';
     }
 
     const costColumn = document.createElement('div');
@@ -189,16 +232,17 @@ function renderMoreItems() {
     const row1 = document.createElement('div'); row1.className = 'row'; let row2 = row1;
     if (isMobile) {
       // row1.style.backgroundColor = (index%2 == 0 ? '#151019' : '#252129');
-      row1.appendChild(dexColumn); row1.appendChild(specColumn);
+      row1.appendChild(dexColumn);      row1.appendChild(starColumn); 
+      row1.appendChild(specColumn);     row1.appendChild(pinColumn);
       const row2 = document.createElement('div'); row2.className = 'row'; li.appendChild(row1);
-      row2.appendChild(img); row2.appendChild(abilityColumn); row2.appendChild(moveColumn);   
+      row2.appendChild(pokeImg); row2.appendChild(abilityColumn); row2.appendChild(moveColumn);   
       const row3 = document.createElement('div'); row3.className = 'row'; li.appendChild(row2);
       row3.appendChild(typeColumn);     row3.appendChild(costColumn);      row3.appendChild(bstColumn);
       row3.appendChild(hpColumn);       row3.appendChild(atkColumn);       row3.appendChild(defColumn);
       row3.appendChild(spaColumn);      row3.appendChild(spdColumn);       row3.appendChild(speColumn);    
       li.appendChild(row3); // Append the 3rd row
     } else {
-      row1.appendChild(dexColumn);      row1.appendChild(img);             row1.appendChild(specColumn);    
+      row1.appendChild(dexColumn);      row1.appendChild(pokeImg);             row1.appendChild(specColumn);    
       row1.appendChild(typeColumn);     row1.appendChild(abilityColumn);   row1.appendChild(moveColumn); 
       row1.appendChild(costColumn);     row1.appendChild(bstColumn);
       row1.appendChild(hpColumn);       row1.appendChild(atkColumn);       row1.appendChild(defColumn);
@@ -207,12 +251,6 @@ function renderMoreItems() {
     }
     itemList.appendChild(li); // Append the current entry to the list of Pokemon
   });
-}
-
-function getBackgroundClass(categ) { // Return suggestion class based on category
-  if (categ === 'Ability')    { return 'suggestion-ability'; }
-  else if (categ === 'Move')  { return 'suggestion-move';    }
-  else                        { return 'suggestion-default'; }
 }
 
 function fidToCategory(fid) {
@@ -266,16 +304,28 @@ function displaySuggestions() {
 function lockFilter(newLockFID) {
   if (!lockedFilters.some( (f) => f == newLockFID)) {
     lockedFilters.push(newLockFID);
+    // console.log(newLockFID);
+    // console.log(fidToName[newLockFID]);
     // Add the filter to the locked filters container
+    let filterMod = null;
+    if (lockedFilters.length > 1) {
+      filterMod = document.createElement("span");
+      filterMod.className = "filter-mod";
+      filterMod.innerHTML = '&'
+      filterMod.toggleOR = 0;
+      filterMod.addEventListener("click", () => toggleOR(filterMod));
+      lockedFilterMods.push(filterMod);
+      filterContainer.appendChild(filterMod);
+    }
     const filterTag = document.createElement("span");
     filterTag.className = "filter-tag";
-    // filterTag.innerHTML = `&#x1F50E;&#xFE0E; ${fidToCategory(newLockFID)}: ${fidToName[newLockFID]}`;
-    const img = document.createElement('img'); img.src = 'images/lock.png'; filterTag.appendChild(img);
+    const img = document.createElement('img'); img.src = 'ui/lock.png'; filterTag.appendChild(img);
     filterTag.innerHTML = filterTag.innerHTML + `${fidToCategory(newLockFID)}: ${fidToName[newLockFID]}`;
-    filterTag.addEventListener("click", () => removeFilter(newLockFID, filterTag));
+    filterTag.addEventListener("click", () => removeFilter(newLockFID, filterTag, filterMod));
     filterContainer.appendChild(filterTag);
     // Refresh suggestions and items
     searchBox.value = ""; // Clear the search bar after locking
+    updateFilterGroups();
     displaySuggestions();
     refreshAllItems();
     if (lockedFilters.length == 1 && fidToCategory(newLockFID) === 'Move' && sortState.column === 'rowno') {
@@ -290,12 +340,20 @@ function lockFilter(newLockFID) {
 }
 
 // Remove a filter **************************
-function removeFilter(filterToRemove, filterTag) {
-  lockedFilters = lockedFilters.filter( (f) => f != filterToRemove );
+function removeFilter(fidToRemove, filterTag, filterModToRemove) {
+  if (lockedFilters.length > 1 && fidToRemove == lockedFilters[0]) {
+    lockedFilterMods[0].remove();
+    lockedFilterMods.splice(0,1);
+  }
+  lockedFilters = lockedFilters.filter( (f) => f != fidToRemove );
   filterTag.remove(); // Remove the filter tag
+  lockedFilterMods = lockedFilterMods.filter( (f) => f != filterModToRemove );
+  if (filterModToRemove) {filterModToRemove.remove();}
   // Refresh suggestions and items
+  updateFilterGroups();
   displaySuggestions();
   refreshAllItems();
+  // Reset the sorting if there aren't any more locked moves
   if (sortState.column === 'moves' && !lockedFilters.some((f) => fidToCategory(f) == 'Move')) { 
     updateHeader(headerColumns[0]); 
   } else { 
@@ -309,86 +367,119 @@ function removeFilter(filterToRemove, filterTag) {
   if (!isMobile) {searchBox.focus();}
 }
 
+function updateFilterGroups() { // Updates the grouping of filters based on AND/OR toggles
+  lockedFilterGroups = [[]];
+  let group = 0;
+  lockedFilterGroups[group].push(lockedFilters[0]);
+  for (let i = 0; i < lockedFilterMods.length; i++) {
+    if (lockedFilterMods[i].toggleOR) { // If it is OR
+      lockedFilterGroups[group].push(lockedFilters[i+1]);
+    } else { // It is AND
+      group += 1;
+      lockedFilterGroups.push([]);
+      lockedFilterGroups[group].push(lockedFilters[i+1]);
+    }
+  }
+}
+
+function toggleOR(filterMod) { // Click a filter to toggle it between AND and OR
+  filterMod.toggleOR = 1 - filterMod.toggleOR;
+  filterMod.innerHTML = (filterMod.toggleOR ? 'OR' : '&');
+  updateFilterGroups();
+  displaySuggestions();
+  refreshAllItems();
+}
+
 // Event function for the header row - Clicking on the header row to sort ***************
 function updateHeader(clickTarget = null, ignoreFlip = false) {
   if (clickTarget == null) {clickTarget = currentTarget; ignoreFlip = true;}
   // console.log(clickTarget?.sortattr)
+  // Set the text of the move column, depending on if a move is filtered
   if (showMoveLearn[0] != null) {
     headerColumns[5].textDef = '<p style="display: inline; color:rgb(140, 130, 240); margin: 0;">' 
                              + (isMobile ? 'Moves' : 'Filtered Moves');
   } else {
-    headerColumns[5].textDef = 'Egg Moves';
+    headerColumns[5].textDef = (isMobile ? 'Egg Moves' : 'Egg Moves');
   }
   headerColumns[5].innerHTML = headerColumns[5].textDef;
+  // Find the new sorting attribute, and update the headers
   const sortAttribute = clickTarget?.sortattr;
   if (sortAttribute) {
-    if (sortState.column === sortAttribute) {
-      if (!ignoreFlip) {
-        sortState.ascending = !sortState.ascending; // Toggle sort direction if sorting by the same column
+    if (sortAttribute == 'shiny') {
+      shinyState = (shinyState == 0 ? 3 : shinyState-1);
+      if (shinyState) {
+        headerColumns[1].innerHTML = '<p style="display: inline; color:rgb(140, 130, 240); margin: 0;">Shiny</p>';
+        const starImg = document.createElement('img');
+        starImg.className = 'star-header';
+        starImg.src = `ui/shiny${shinyState}.png`;
+        headerColumns[1].appendChild(starImg);
+      } else {
+        headerColumns[1].innerHTML = 'Shiny';
       }
     } else {
-      sortState.column = sortAttribute;
-      // Sort ascending on some columns, but descending on others
-      sortState.ascending = (sortState.column == "rowno")||(sortState.column == "spec")
-                          ||(sortState.column == "type1")||(sortState.column == "ab1")||(sortState.column == "moves");
-      if (currentTarget?.textDef) { // Clear arrow from previous target
-        currentTarget.innerHTML = currentTarget?.textDef;
+      if (sortState.column === sortAttribute) {
+        if (!ignoreFlip) {
+          sortState.ascending = !sortState.ascending; // Toggle sort direction if sorting by the same column
+        }
+      } else {
+        sortState.column = sortAttribute;
+        // Sort ascending on some columns, but descending on others
+        sortState.ascending = (sortState.column == "rowno")||(sortState.column == "spec")
+                            ||(sortState.column == "type1")||(sortState.column == "ab1")||(sortState.column == "moves");
+        if (currentTarget?.textDef) { // Clear arrow from previous target
+          currentTarget.innerHTML = currentTarget?.textDef;
+        }
       }
+      currentTarget = clickTarget; // Draw arrow on new target
+      clickTarget.innerHTML = clickTarget.textDef + '<br><p style="color:rgb(140, 130, 240); margin: 0; font-family: serif;">' + (sortState.ascending ? "&#9650;" : "&#9660;") + '</p>';
     }
-    currentTarget = clickTarget; // Draw arrow on new target
-    clickTarget.innerHTML = clickTarget.textDef + '<br><p style="color:rgb(140, 130, 240); margin: 0; font-family: serif;">' + (sortState.ascending ? "&#9650;" : "&#9660;") + '</p>';
   }
   // Update the display
   displaySuggestions();
   refreshAllItems();
 }
 
-function adjustLayout() {
-  const width = window.innerWidth;
-  isMobile = (width <= 768);
-  // console.log((isMobile ? "Mobile layout" : "Desktop layout"), width, isMobile);
-  titleimg.src = (isMobile ? 'images/mag18.png' : 'images/mag30.png' );
-  // Redraw all the header columns into the header container
-  headerContainer.innerHTML = '';
-  const thisRow = document.createElement('div'); thisRow.className = 'header-row';
-  if (isMobile) {
-    thisRow.appendChild(headerColumns[0]);
-    thisRow.appendChild(headerColumns[1]);
-    thisRow.appendChild(headerColumns[4]);
-    thisRow.appendChild(headerColumns[2]);
-    thisRow.appendChild(headerColumns[5]);
-    headerContainer.appendChild(thisRow);
-    const row2 = document.createElement('div'); row2.className = 'header-row';
-    row2.appendChild(headerColumns[3]);
-    for (const thisColumn of headerColumns.slice(6,15)) {row2.appendChild(thisColumn);}  
-    headerContainer.appendChild(row2);
-  } else {
-    for (const thisColumn of headerColumns) {thisRow.appendChild(thisColumn);}  
-    headerContainer.appendChild(thisRow);
+function adjustLayout(headerTarget = null, forceAdjust = false) {
+  if (isMobile != (window.innerWidth <= 768) || forceAdjust) {
+    let windowWidth = window.innerWidth;
+    isMobile = (windowWidth <= 768);
+    // console.log('Adjusting layout');
+    // console.log((isMobile ? "Mobile layout" : "Desktop layout"), windowWidth, isMobile);
+    titleimg.src = (isMobile ? 'ui/mag18.png' : 'ui/mag30.png' );
+    // Redraw all the header columns into the header container
+    headerContainer.innerHTML = '';
+    const thisRow = document.createElement('div'); thisRow.className = 'header-row';
+    if (isMobile) {
+      thisRow.appendChild(headerColumns[0]);
+      thisRow.appendChild(headerColumns[1]);
+      thisRow.appendChild(headerColumns[4]);
+      thisRow.appendChild(headerColumns[2]);
+      thisRow.appendChild(headerColumns[5]);
+      headerContainer.appendChild(thisRow);
+      const row2 = document.createElement('div'); row2.className = 'header-row';
+      row2.appendChild(headerColumns[3]);
+      for (const thisColumn of headerColumns.slice(6,15)) {row2.appendChild(thisColumn);}  
+      headerContainer.appendChild(row2);
+    } else {
+      for (const thisColumn of headerColumns) {thisRow.appendChild(thisColumn);}  
+      headerContainer.appendChild(thisRow);
+    }
+  updateHeader(headerTarget);
   }
 }
 
+// Initial display of items, and initial sort by Dex
+adjustLayout(headerColumns[0],true);
+
 // Load more items on scroll
 window.addEventListener("scroll", () => {
-  // console.log('scrolled')
-  const scrollTop = window.scrollY;
-  const windowHeight = window.innerHeight;
-  const documentHeight = document.body.scrollHeight;
   if (window.scrollY + window.innerHeight >= document.body.scrollHeight * 0.8 - 1000) {
     renderMoreItems();
   }
 });
-
-// Initial display
-adjustLayout();
-updateHeader(headerColumns[0]);
-
 // Run on page load and when resizing the window
 window.addEventListener("resize", () => { 
   adjustLayout();
-  displaySuggestions();
-  refreshAllItems();
-  updateHeader();
 });
 searchBox.addEventListener('input', () => { // Typing in search box ***************
   displaySuggestions();
@@ -406,6 +497,11 @@ document.addEventListener('keydown', (event) => { // Hit 'Enter' to lock the fir
     lockFilter(suggestionPreview);
   }
 });
+// searchBox.addEventListener('input', (event) => { // doesn't work ........
+//   if (event.key == "PageDown") {
+//     itemList.focus();
+//   }
+// });
 document.addEventListener('keydown', (event) => { // Hit escape to clear the search box, or the last filter
   if (event.key == "Escape") {
     if (searchBox.value.length > 0) {
@@ -416,8 +512,9 @@ document.addEventListener('keydown', (event) => { // Hit escape to clear the sea
       const lastFilter = lockedFilters[lockedFilters.length - 1];
       const filterTags = document.querySelectorAll(".filter-tag");
       const lastFilterTag = filterTags[filterTags.length - 1];
+      const lastFilterMod = lockedFilterMods[lockedFilterMods.length - 1];
       if (lastFilter && lastFilterTag) {
-        removeFilter(lastFilter, lastFilterTag); // Remove the last filter
+        removeFilter(lastFilter, lastFilterTag, lastFilterMod); // Remove the last filter
       }
     }
   }
