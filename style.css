@@ -251,7 +251,7 @@ h1 {
     /* outline: 1px solid red; */
   }
   .header-row:first-child {
-    grid-template-columns: 64px 43px 1.12fr 1.1fr 1.4fr;
+    grid-template-columns: 45px 45px 1.12fr 1.1fr 1.4fr;
   }
   .header-row:last-child {
     grid-template-columns: 64px 43px repeat(7, 0.5fr);
