@@ -3,7 +3,6 @@ html {
   font-size: 16px;
 }
 body {
-  /* font-family: Arial, sans-serif; */
   background-color: #0E0C0F;
   margin: 0px;
   padding: 0px;
@@ -17,7 +16,7 @@ div {
 .container {
   display: flex;
   flex-direction: column;
-  width: calc(100vw-45px);
+  /* width: calc(100vw-45px); */
   max-width: 1000px;
   min-width: 400px;
   min-height: 100vh;
@@ -30,8 +29,14 @@ div {
 h1 {
   margin-top: 0px;
   margin-bottom: 14px;
+  padding-left: 5px;
+  padding-right: 5px;
+  display: flex;
+  flex-direction: row;
 }
-
+h1 > div:nth-child(2){
+  flex-grow: 1;
+}
 .colorful-text span {
   display: inline-block;
   animation: colorChange 2s ease-in-out;
@@ -142,11 +147,12 @@ h1 {
   h1 {
     font-size: 34px;
   }
-  #title-img {
+  .header-img {
     width: 31px;
     height: 30px;
     margin-right: -4px;
     margin-bottom: -2px;
+    cursor: pointer;
   }
   .container {
     padding: 20px;
@@ -201,12 +207,22 @@ h1 {
   .row:first-child {
     grid-template-columns: 45px 87px 2fr 64px 2.5fr 2.5fr 0.7fr repeat(7, 0.5fr);
   }
+  .pin-img {
+    margin: 0px;
+    width: 13px;
+    height: 18px;
+    margin-bottom: 4px;
+    object-fit: none;
+    cursor: pointer;
+    /* outline: 1px solid red; */
+  }
   .star-img {
     margin: 0px;
     width: 13px;
     height: 18px;
     margin-top: 8px;
-    object-fit:none;
+    margin-bottom: -3px;
+    object-fit: none;
     cursor: pointer;
     /* outline: 1px solid red; */
   }
@@ -218,11 +234,12 @@ h1 {
   h1 {
     font-size: 20px;
   }
-  #title-img {
+  .header-img {
     width: 20px;
     height: 18px;
     margin-right: -2px;
     margin-bottom: -1px;
+    cursor: pointer;
   }
   .container {
     padding: 5px;
@@ -251,7 +268,8 @@ h1 {
     /* outline: 1px solid red; */
   }
   .header-row:first-child {
-    grid-template-columns: 45px 45px 1.12fr 1.1fr 1.4fr;
+    gap: 0px;
+    grid-template-columns: 50px 60px 1.18fr 1.1fr 1.4fr;
   }
   .header-row:last-child {
     grid-template-columns: 64px 43px repeat(7, 0.5fr);
@@ -272,11 +290,11 @@ h1 {
     align-items: center; /* Center items vertically */
     text-align: center;
     display: grid;
-    gap: 5px; /* Spacing between columns */
+    gap: 0px;
     /* outline: 1px solid red; */
   }
   .row:first-child {
-    grid-template-columns: 45px 45px 1fr 16px;
+    grid-template-columns: 50px 60px 1fr 16px;
     margin-bottom: 9px;
     max-height: 18px;
     /* background-color: #201925;   */
@@ -284,12 +302,20 @@ h1 {
   .row:nth-child(2) {
     grid-template-columns: 0.5fr 2fr 2fr;
     margin-bottom: 7px;
-    gap: 0px;
     max-height: 72px;
   }
   .row:last-child {
     grid-template-columns: 64px 43px repeat(7, 0.5fr);
     max-height: 36px;
+    gap: 5px; /* Spacing between columns */
+  }
+  .pin-img {
+    margin: 0px;
+    width: 15px;
+    height: 18px;
+    margin-right: -2px;
+    cursor: pointer;
+    /* outline: 1px solid red; */
   }
   .star-img {
     margin: 0px;
@@ -320,18 +346,10 @@ h1 {
   padding: 0 0px;
   /* outline: 1px solid red; */
 }
-
 #itemList li:nth-child(odd) {
   background-color: #252129; /* Alternate row color */
 }
 
-.pin-img {
-  margin: 0px;
-  width: 11px;
-  height: 11px;
-  margin-bottom: 7px;
-  /* cursor: pointer; */
-}
 .star-header {
   margin: auto;
   width: 18px;
@@ -339,7 +357,6 @@ h1 {
   object-fit: none;
   /* outline: 1px solid red; */
 }
-
 .item-image {
   width: 117px; 
   height: 82px; 
@@ -349,5 +366,52 @@ h1 {
   margin-bottom: -5px;
   border-radius: 4px; 
   object-fit:none;
+  /* outline: 1px solid red; */
+}
+
+#splashScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: none; /* Start hidden */
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+#splashContent {
+  align-items: center;
+  text-align: center;
+  justify-content: space-between;
+  padding: 10px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  border: 1px solid #ffffff;
+  border-radius: 4px;
+  background-color: #151019;
+  min-width: 300px;
+  max-width: 380px;
+  min-height: 300px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  position: relative; /* Ensure it does not close on click */
+}
+.show {
+  display: flex !important;
+}
+#splashFooter {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: space-between;
+}
+.splash-move-row {
+  max-width: 250px;
+}
+.splash-move-column {
+  align-items: center;
+  text-align: center;
+  padding: 0 0px;
   /* outline: 1px solid red; */
 }
