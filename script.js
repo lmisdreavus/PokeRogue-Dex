@@ -14,13 +14,12 @@ const openMenuButton = document.getElementById("menu-img");
 const possibleFID = [...Array(fidThreshold[6]).keys()];
 const increment = 50; // Number of items to load at a time
 let renderLimit = 0; // Start with no items
-let showMoveLearn = []; // Filtered moves to show the sources of
+let showMoveLearn = []; // Filtered moves to show sources
 let filterToEnter = null;
 let tabSelect = 0;
 let lockedFilters = []; // List of all locked filters
 let lockedFilterMods = []; // List of filter mods objects
 let lockedFilterGroups = [[]]; // Grouped together for OR
-let lockedOR = []; // 0 for AND, 1 for OR
 let isMobile = false;
 let filteredItems = null;
 let shinyState = 0;   // Global state of shiny   (0,1,2,3)
@@ -305,7 +304,7 @@ function displaySuggestions() { // Get search query and clear the list
   let matchingFID = [];   filterToEnter = null;   suggestions.innerHTML = '';
   // Filter suggestions based on query and exclude already locked filters
   matchingFID = possibleFID.filter((fid) => {
-      let searchableName = fidToName[fid];
+      let searchableName = fidToName[fid]; // Search via category for some categories
       if (fid >= fidThreshold[2]) { searchableName = `${fidToCategory(fid)}${fidToName[fid]}`; }
       // Contains the search query and is not already locked
       return searchableName.toLowerCase().replace(/\s+/g, '').includes(query) 
