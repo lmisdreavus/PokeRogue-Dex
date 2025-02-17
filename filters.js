@@ -26,6 +26,7 @@ const fidThreshold = [
 1173,
 1174,
 1175,
+1180,
 ];
 const fidToName = [
 'Bug',
@@ -1203,4 +1204,9 @@ const fidToName = [
 '10',
 'Female',
 'Flipped',
+'Common',
+'Rare',
+'Epic',
+'Manaphy',
+'Legendary',
 ];

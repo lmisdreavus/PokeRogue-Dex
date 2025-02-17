@@ -11,7 +11,7 @@ const suggestions = document.getElementById("suggestions");
 const splashScreen = document.getElementById("splashScreen");
 const splashContent = document.getElementById("splashContent");
 const openMenuButton = document.getElementById("menu-img");
-const possibleFID = [...Array(fidThreshold[6]).keys()];
+const possibleFID = [...Array(fidThreshold[fidThreshold.length-1]).keys()];
 const increment = 50; // Number of items to load at a time
 let renderLimit = 0; // Start with no items
 let showMoveLearn = []; // Filtered moves to show sources
@@ -78,15 +78,20 @@ function refreshAllItems() {
             } else if (abilityState == 3) {
               return item?.[thisLockedFID] == 312
             }
-          } else if (fidThreshold[2] <= thisLockedFID && thisLockedFID < fidThreshold[3]) { // Gen filters
+          } else if (thisLockedFID < fidThreshold[2]) { // Type/Ability/Move filters
+            return (thisLockedFID in item)
+          } else if (thisLockedFID < fidThreshold[3]) { // Gen filters
             return (item.gen == thisLockedFID-fidThreshold[2]+1)
-          } else if (fidThreshold[3] <= thisLockedFID && thisLockedFID < fidThreshold[4]) { // Cost filters
+          } else if (thisLockedFID < fidThreshold[4]) { // Cost filters
             return (item.cost == thisLockedFID-fidThreshold[3]+1)
           } else if (thisLockedFID == fidThreshold[4]) { // Gender filter
             return (item.fem == 1)
           } else if (thisLockedFID == fidThreshold[5]) { // Flipped stat filter
             return true
+          } else if (thisLockedFID < fidThreshold[7]) { // Egg tier filter
+            return (item.eggtier == thisLockedFID-fidThreshold[6])
           }
+          console.log('Filter error');
           return thisLockedFID in item
     }))) 
   }
@@ -233,11 +238,7 @@ function renderMoreItems() {
     }
 
     const costColumn = document.createElement('div'); // Show the cost, colored by the egg tier
-          costColumn.className = 'item-column'; costColor = 'rgb(255, 255, 255)';
-          if      (item.eggtier == 1) {costColor = 'rgb(131, 182, 239)';}
-          else if (item.eggtier == 2) {costColor = 'rgb(240, 230, 140)';}
-          else if (item.eggtier == 3) {costColor = 'rgb(216, 143, 205)';}
-          else if (item.eggtier == 4) {costColor = 'rgb(239, 131, 131)';}
+          costColumn.className = 'item-column'; costColor = eggTierColors(item.eggtier);
           costColumn.innerHTML = `<b>Cost<br><span style="color:${costColor};">${item.cost}</span></b>`;  
     let flipped = lockedFilters.some((f) => f == fidThreshold[5]);                
     const bstColumn = document.createElement('div');  bstColumn.className = 'item-column'; // Create the stats columns
@@ -286,7 +287,8 @@ function fidToCategory(fid) {
   else if (fid < fidThreshold[3]) { return 'Gen'; }
   else if (fid < fidThreshold[4]) { return 'Cost'; }
   else if (fid < fidThreshold[5]) { return 'Gender'; }
-  else { return 'Mode'; }
+  else if (fid < fidThreshold[6]) { return 'Mode'; }
+  else { return 'Egg Tier'; }
 }
 function fidToColor(fid) {
   if (fid < fidThreshold[0]) { return ['rgb(255, 255, 255)', typeColors[fidToName[fid]]]; }
@@ -295,7 +297,17 @@ function fidToColor(fid) {
   else if (fid < fidThreshold[3]) { return ['rgb(131, 182, 239)', 'rgb(255, 255, 255)']; }
   else if (fid < fidThreshold[4]) { return ['rgb(240, 230, 140)', 'rgb(255, 255, 255)']; }
   else if (fid < fidThreshold[5]) { return ['rgb(216, 143, 205)', 'rgb(255, 255, 255)']; }
-  else { return ['rgb(255, 255, 255)', 'rgb(239, 131, 131)']; }
+  else if (fid < fidThreshold[6]) { return ['rgb(255, 255, 255)', 'rgb(239, 131, 131)']; }
+  else { return ['rgb(255, 255, 255)', eggTierColors(fid)]; }
+}
+function eggTierColors(fid) {
+  if (fid >= fidThreshold[6]) { fid -= fidThreshold[6]; }
+  if (fid == 0)        { return 'rgb(255, 255, 255)'; }
+  else if (fid == 1) { return 'rgb(131, 182, 239)'; }
+  else if (fid == 2) { return 'rgb(240, 230, 140)'; }
+  else if (fid == 3) { return 'rgb(239, 131, 131)'; }
+  else if (fid == 4) { return 'rgb(216, 143, 205)'; }
+  else { console.log('Invalid egg tier'); return null; }
 }
 
 // Display the filter suggestions *************************
@@ -304,7 +316,7 @@ function displaySuggestions() { // Get search query and clear the list
   let matchingFID = [];   filterToEnter = null;   suggestions.innerHTML = '';
   // Filter suggestions based on query and exclude already locked filters
   matchingFID = possibleFID.filter((fid) => {
-      let searchableName = fidToName[fid]; // Search via category for some categories
+      let searchableName = fidToName[fid]; // Search via category for later categories
       if (fid >= fidThreshold[2]) { searchableName = `${fidToCategory(fid)}${fidToName[fid]}`; }
       // Contains the search query and is not already locked
       return searchableName.toLowerCase().replace(/\s+/g, '').includes(query) 
@@ -313,10 +325,13 @@ function displaySuggestions() { // Get search query and clear the list
   // Erase the list of suggestions if it is too large 
   if (matchingFID.length > 20) { matchingFID = []; } 
   
-  // If there is at least one locked filter, remove suggestions that have no matches
-  if (lockedFilters.length > 0) {
-  // Sort the list of suggestions based on hits in the item list (but still by type/ability/move)
   // (If there are no locked filters, the list is already presorted)
+  if (lockedFilters.length > 0) { // If there is at least one locked filter, resort the list
+  // Count how many hits each suggestion has
+
+  // Sort the list of suggestions based on hits in the item list (but still by type/ability/move)
+
+  // Remove suggestions that have no matches?
   // Not implemented yet...
   }
 
