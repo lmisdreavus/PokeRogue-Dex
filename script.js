@@ -209,7 +209,7 @@ function renderMoreItems() {
     abilityColumn.innerHTML = '<b>' +
     '<p style="color:rgb(' + (abilityState==0||abilityState==1 ? '255, 255, 255' : '145,145,145') + '); margin: 0;">' + item.ab1 + '</p>' +
     '<p style="color:rgb(' + (abilityState==0||abilityState==1 ? '255, 255, 255' : '145,145,145') + '); margin: 0;">' + item.ab2 + '</p>' +
-    '<p style="color:rgb(' + (abilityState==0||abilityState==2 ? '240, 230, 140' : '120,120,120') + '); margin: 0;">' + item.hab + '</p>' +
+    '<p style="color:rgb(' + (abilityState==0||abilityState==2 ? '240, 230, 140' : '105,105,105') + '); margin: 0;">' + item.hab + '</p>' +
     '<p style="color:rgb(' + (abilityState==0||abilityState==3 ? '140, 130, 240' : '145,145,145') + '); margin: 0;">' + item.pas + '</p></b>';
 
     // Show the column of egg moves, or filtered moves and their sources
