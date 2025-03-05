@@ -412,6 +412,9 @@ function showMoveSplash(fid) {
       // if (thisDesc[9].includes(6)) {splashMoveTags.innerHTML += "<p>Reflectable by magic</p>";};
       if (thisDesc[9].includes(47)) {splashMoveTags.innerHTML += "<p>Can't be redirected</p>";};
       if (thisDesc[9].includes(48)) {splashMoveTags.innerHTML += "<p>Always hits in Rain</p>";};
+      if (thisDesc[9].includes(56)) {splashMoveTags.innerHTML += "<p>User can't switch out</p>";};
+      if (thisDesc[9].includes(57)) {splashMoveTags.innerHTML += "<p>Target can't switch out</p>";};
+      if (thisDesc[9].includes(58)) {splashMoveTags.innerHTML += "<p>User & Target can't switch out</p>";};
       if (thisDesc[9].includes(49)) {splashMoveTags.innerHTML += "<p>No effect on Bosses</p>";};
       if (thisDesc[9].includes(4)) {splashMoveTags.innerHTML += "<p>Makes Contact</p>";};
       if (thisDesc[9].includes(51)) {splashMoveTags.innerHTML += "<p style='color:rgb(240, 230, 140);'>Partially Implemented</p>";};
