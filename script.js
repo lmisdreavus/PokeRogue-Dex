@@ -389,15 +389,15 @@ function showMoveSplash(fid) {
       if (thisDesc[9].includes(34)) {splashMoveTags.innerHTML += "<p>Costs 50% of HP</p>";};
       if (thisDesc[9].includes(35)) {splashMoveTags.innerHTML += "<p>Costs 25% of HP</p>";};
       if (thisDesc[9].includes(36)) {splashMoveTags.innerHTML += "<p>Recoil 33% of damage</p>";};
-      if (thisDesc[9].includes(37)) {splashMoveTags.innerHTML += "<p>Recoil 25% of damage</p>";};
-      if (thisDesc[9].includes(53)) {splashMoveTags.innerHTML += "<p>Recoil 50% of damage</p>";};
+      if (thisDesc[9].includes(37)) {splashMoveTags.innerHTML += "<p>Recoil 50% of damage</p>";};
+      if (thisDesc[9].includes(53)) {splashMoveTags.innerHTML += "<p>Recoil 25% of damage</p>";};
       if (thisDesc[9].includes(13)) {splashMoveTags.innerHTML += "<p>Triage gives +3 priority</p>";};
       if (thisDesc[9].includes(14)) {splashMoveTags.innerHTML += "<p>Sound based move</p>";};
       if (thisDesc[9].includes(15)) {splashMoveTags.innerHTML += "<p>Prevented by Damp ability</p>";};
       if (thisDesc[9].includes(16)) {splashMoveTags.innerHTML += "<p>Triggers Wind Rider</p>";};
       if (thisDesc[9].includes(54)) {splashMoveTags.innerHTML += "<p>Ignores Abilities</p>";};
       if (thisDesc[9].includes(17)) {splashMoveTags.innerHTML += "<p>Ignores Protect</p>";};
-      if (thisDesc[9].includes(18)) {splashMoveTags.innerHTML += "<p>Ignores Substitute</p>";};
+      if (thisDesc[9].includes(18) || thisDesc[9].includes(14)) {splashMoveTags.innerHTML += "<p>Ignores Substitute</p>";};
       if (thisDesc[9].includes(19)) {splashMoveTags.innerHTML += "<p>Switches out target</p>";};
       if (thisDesc[9].includes(52)) {splashMoveTags.innerHTML += "<p>User switches out</p>";};
       if (thisDesc[9].includes(23)) {splashMoveTags.innerHTML += "<p>Hits 2 times</p>";};
@@ -405,7 +405,7 @@ function showMoveSplash(fid) {
       if (thisDesc[9].includes(25)) {splashMoveTags.innerHTML += "<p>Hits 10 times</p>";};
       if (thisDesc[9].includes(26)) {splashMoveTags.innerHTML += "<p>Hits 2-5 times</p>";};
       if (thisDesc[9].includes(38)) {splashMoveTags.innerHTML += "<p>Repeats for 2-3 turns</p>";};
-      if (thisDesc[9].includes(43)) {splashMoveTags.innerHTML += "<p>One Hit KO move</p>";};
+      if (thisDesc[9].includes(43)) {splashMoveTags.innerHTML += "<p>One Hit KO move</p><p>Modified against Bosses</p>";};
       if (thisDesc[9].includes(44)) {splashMoveTags.innerHTML += "<p>Removes hazards</p>";};
       if (thisDesc[9].includes(45)) {splashMoveTags.innerHTML += "<p>Traps and damages target</p>";};
       if (thisDesc[9].includes(46)) {splashMoveTags.innerHTML += "<p>30% deal 2x damage</p>";};
