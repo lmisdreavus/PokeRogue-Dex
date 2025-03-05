@@ -1,5 +1,5 @@
 // script.js
-// Imports: items, fidThreshold, fidToName, typeColors
+// Imports: items, fidThreshold, fidToName, fidToDesc, typeColors
 
 const itemList = document.getElementById('itemList');
 const searchBox = document.getElementById('searchBox');
@@ -47,7 +47,14 @@ let currentTarget = null; // Track current sorted column
 function refreshAllItems() {
   // console.log('Refreshing all items');
   const query = searchBox.value.toLowerCase().replace(/\s+/g, '');
-  itemList.innerHTML = ""; // Clear existing items
+  // itemList.innerHTML = ""; // Clear existing items
+  itemList.querySelectorAll('li').forEach(li => {
+    li.replaceWith(li.cloneNode(true)); // Clones without listeners
+  });
+  while (itemList.firstChild) {
+      itemList.firstChild.remove();
+  }
+
   filteredItems = items;
   if (shinyState > 1) { // Only show items that have that tier of shiny
     filteredItems = filteredItems.filter(item => item.sh >= shinyState);
@@ -232,21 +239,17 @@ function renderMoreItems() {
     
     const typeColumn = document.createElement('div'); // Show both types
     typeColumn.className = 'item-column';
-    typeColumn.innerHTML = '<p style="color:' + typeColors[fidToName[item.t1]] + '; margin: 0; font-weight: bold;">' + fidToName[item.t1] + '</p>';
-    if ('t2' in item) { typeColumn.innerHTML += '<p style="color:' + typeColors[fidToName[item.t2]] + '; margin: 0; font-weight: bold;">'    + fidToName[item.t2] + '</p>'; } 
+    typeColumn.innerHTML = '<p style="color:' + typeColors[item.t1] + '; margin: 0; font-weight: bold;">' + fidToName[item.t1] + '</p>';
+    if ('t2' in item) { typeColumn.innerHTML += '<p style="color:' + typeColors[item.t2] + '; margin: 0; font-weight: bold;">'    + fidToName[item.t2] + '</p>'; } 
     
     // Show all four abilities
     const abilityColumn = document.createElement('div'); abilityColumn.className = 'item-column';
     ['a1','a2','ha','pa'].forEach((name) => {
       if (name in item) {
-        const abilityRow = document.createElement('div');  abilityRow.className = 'ability-name';
-        const abilityFID = item[name];
-        abilityRow.innerHTML = '<p style="color:' + abToColor(name) + '; margin: 0;">' + fidToName[abilityFID] + '</p>';
-        // abilityRow.addEventListener('click', () => {
-        //   splashContent.innerHTML = '<b>' + fidToName[abilityFID] + '</b><br><br>' + fidToDesc[abilityFID];
-        //   splashScreen.classList.add("show"); // Make it visible
-        // });
-        abilityColumn.appendChild(abilityRow); 
+        const clickableRow = document.createElement('div');  clickableRow.className = 'clickable-name';
+        clickableRow.innerHTML = `<p style="color:${abToColor(name)}; margin: 0;">${fidToName[item[name]]}</p>`;
+        clickableRow.addEventListener('click', () => {showMoveSplash(item[name]);});
+        abilityColumn.appendChild(clickableRow); 
       }
     });
     
@@ -264,14 +267,24 @@ function renderMoreItems() {
         else if (source == 203) {sourceText = '<span style="color:rgb(255, 255, 255);">Common TM';}
         else if (source == 204) {sourceText = '<span style="color:rgb(131, 182, 239);">Great TM';}
         else if (source == 205) {sourceText = '<span style="color:rgb(240, 230, 140);">Ultra TM';}
-        else {sourceText = '<span style="color:rgb(255, 255, 255);">Lv ' + item[thisMove];}
-        moveColumn.innerHTML = moveColumn.innerHTML + '<b><p style="color:rgb(140, 130, 240); margin: 0;">' 
-                             + fidToName[thisMove] + ':<br>' + sourceText + '</span></p></b>';
+        else {sourceText = `<span style="color:rgb(255, 255, 255);">Lv ${item[thisMove]}`;}
+        // Show the move name, with click event for splash screen
+        const clickableRow = document.createElement('div');  clickableRow.className = 'clickable-name';
+        clickableRow.innerHTML = `<p style="color:rgb(140, 130, 240); margin: 0;"> 
+                                 ${fidToName[thisMove]}:<br>${sourceText}</span></p>`;
+        clickableRow.addEventListener('click', () => {showMoveSplash(thisMove);});
+        moveColumn.appendChild(clickableRow);
       }
     });
     if (showMoveLearn.length == 0) {
-      moveColumn.innerHTML = '<b>' + fidToName[item.e1] + '<br>' + fidToName[item.e2] + '<br>' + fidToName[item.e3] + '<br>' +
-                             '<span style="color:rgb(240, 230, 140);">' + fidToName[item.e4] + '</span></b>';
+      ['e1','e2','e3','e4'].forEach((name) => {
+        // Show the move name, with click event for splash screen
+        const clickableRow = document.createElement('div');  clickableRow.className = 'clickable-name';
+        if (name == 'e4') { clickableRow.style.color = 'rgb(240, 230, 140)'; }
+        clickableRow.innerHTML = fidToName[item[name]];
+        clickableRow.addEventListener('click', () => {showMoveSplash(item[name]);});
+        moveColumn.appendChild(clickableRow);
+      });
     }
 
     const costColumn = document.createElement('div'); // Show the cost, colored by the egg tier
@@ -317,6 +330,97 @@ function renderMoreItems() {
   });
 }
 
+function showMoveSplash(fid) {
+  splashContent.style.width = '300px';
+  const thisDesc = fidToDesc[fid];
+  splashContent.innerHTML = `<b>${fidToName[fid]}</b><hr>`; // Name header
+  if (fid<fidThreshold[1]) { // For abilities
+    splashContent.innerHTML = `<b>${fidToName[fid]}</b><hr>${thisDesc[0]}`;
+  } else { // For moves
+    const splashMoveRow = document.createElement('div');  splashMoveRow.className = 'splash-move-row';
+    const splashMoveCol1 = document.createElement('div');
+    splashMoveCol1.innerHTML = `<span style="color:${typeColors[thisDesc[2]]};">${fidToName[thisDesc[2]]}</span><br><img src="ui/cat${thisDesc[3]}.png"></img>`;
+    splashMoveRow.appendChild(splashMoveCol1);
+    ['Pow','Acc','PP'].forEach((attName,index) => {
+      const splashMoveCol = document.createElement('div');
+      splashMoveCol.innerHTML = `${attName}<br>${(thisDesc[4+index]==-1 ? '-' : thisDesc[4+index])}`;
+      splashMoveRow.appendChild(splashMoveCol);
+    });
+    splashContent.appendChild(splashMoveRow);
+    splashContent.innerHTML += '<hr>' + thisDesc[0]; // Show move description
+    // Add all tags for priority, targets, procs, contact, other
+    if (thisDesc[7] || thisDesc[8] || thisDesc[9]) {
+      const splashMoveTags = document.createElement('div');  splashMoveTags.className = 'splash-move-tags';
+      if (thisDesc[7] > 0) {
+        {splashMoveTags.innerHTML += `<p style="color:rgb(143, 214, 154);">Priority: +${thisDesc[7]}</p>`;};
+      } else if (thisDesc[7] < 0) {
+        {splashMoveTags.innerHTML += `<p style="color:rgb(239, 131, 131);">Priority: ${thisDesc[7]}</p>`;};
+      }
+      if (thisDesc[9].includes(20)) {splashMoveTags.innerHTML += '<p style="color:rgb(216, 143, 205);">Targets: Random Enemy</p>';};
+      if (thisDesc[9].includes(21)) {splashMoveTags.innerHTML += '<p style="color:rgb(240, 173, 131);">Targets: All Enemies</p>';};
+      if (thisDesc[9].includes(22)) {splashMoveTags.innerHTML += '<p style="color:rgb(239, 131, 131);">Targets: Entire Field</p>';};
+      thisDesc[8].forEach((thisProc) => {
+        const procChance = ((thisProc[0] == '-1') ? '' : `${thisProc[0]}% `);
+        const procStages = ((thisProc[2] == '0') ? '' : ` ${(thisProc[2] > 0 ? '+' : '')}${thisProc[2]} `);
+        splashMoveTags.innerHTML += `<p>${procChance}${procToDesc[thisProc[1]]}${procStages}</p>`;
+      });
+      if (thisDesc[9].includes(0)) {splashMoveTags.innerHTML += "<p>High Critical Ratio</p>";};
+      if (thisDesc[9].includes(1)) {splashMoveTags.innerHTML += "<p>Guaranteed Critical Hit</p>";};
+      if (thisDesc[9].includes(2)) {splashMoveTags.innerHTML += "<p>User Critical Rate +1</p>";};
+      if (thisDesc[9].includes(27)) {splashMoveTags.innerHTML += "<p>Heals Status Effects</p>";};
+      if (thisDesc[9].includes(28)) {splashMoveTags.innerHTML += "<p>Heals Status Effects</p>";};
+      if (thisDesc[9].includes(29)) {splashMoveTags.innerHTML += "<p>Heals Sleep</p>";};
+      if (thisDesc[9].includes(30)) {splashMoveTags.innerHTML += "<p>Heals Freeze</p>";};
+      if (thisDesc[9].includes(31)) {splashMoveTags.innerHTML += "<p>Heals Paralysis</p>";};
+      if (thisDesc[9].includes(32)) {splashMoveTags.innerHTML += "<p>Heals Burn</p>";};
+      if (thisDesc[9].includes(39)) {splashMoveTags.innerHTML += "<p>Heals 100% damage dealt</p>";};
+      if (thisDesc[9].includes(40)) {splashMoveTags.innerHTML += "<p>Heals 75% damage dealt</p>";};
+      if (thisDesc[9].includes(41)) {splashMoveTags.innerHTML += "<p>Heals by target's Atk</p>";};
+      if (thisDesc[9].includes(42)) {splashMoveTags.innerHTML += "<p>Heals 50% damage dealt</p>";};
+      if (thisDesc[9].includes(5)) {splashMoveTags.innerHTML += "<p>No effect on Grass/Overcoat</p>";};
+      if (thisDesc[9].includes(55)) {splashMoveTags.innerHTML += "<p>No seeding on Grass Types</p>";};
+      if (thisDesc[9].includes(7)) {splashMoveTags.innerHTML += "<p>Boosted by Sharpness</p>";};
+      if (thisDesc[9].includes(8)) {splashMoveTags.innerHTML += "<p>Boosted by Iron Fist</p>";};
+      if (thisDesc[9].includes(9)) {splashMoveTags.innerHTML += "<p>Triggers Dancer ability</p>";};
+      if (thisDesc[9].includes(10)) {splashMoveTags.innerHTML += "<p>No effect on Bulletproof</p>";};
+      if (thisDesc[9].includes(11)) {splashMoveTags.innerHTML += "<p>Boosted by Mega Launcher</p>";};
+      if (thisDesc[9].includes(12)) {splashMoveTags.innerHTML += "<p>Boosted by Strong Jaw</p>";};
+      if (thisDesc[9].includes(33)) {splashMoveTags.innerHTML += "<p>Boosted by Reckless</p>";};
+      if (thisDesc[9].includes(34)) {splashMoveTags.innerHTML += "<p>Costs 50% of HP</p>";};
+      if (thisDesc[9].includes(35)) {splashMoveTags.innerHTML += "<p>Costs 25% of HP</p>";};
+      if (thisDesc[9].includes(36)) {splashMoveTags.innerHTML += "<p>Recoil 33% of damage</p>";};
+      if (thisDesc[9].includes(37)) {splashMoveTags.innerHTML += "<p>Recoil 25% of damage</p>";};
+      if (thisDesc[9].includes(53)) {splashMoveTags.innerHTML += "<p>Recoil 50% of damage</p>";};
+      if (thisDesc[9].includes(13)) {splashMoveTags.innerHTML += "<p>Triage gives +3 priority</p>";};
+      if (thisDesc[9].includes(14)) {splashMoveTags.innerHTML += "<p>Sound based move</p>";};
+      if (thisDesc[9].includes(15)) {splashMoveTags.innerHTML += "<p>Prevented by Damp ability</p>";};
+      if (thisDesc[9].includes(16)) {splashMoveTags.innerHTML += "<p>Triggers Wind Rider</p>";};
+      if (thisDesc[9].includes(54)) {splashMoveTags.innerHTML += "<p>Ignores Abilities</p>";};
+      if (thisDesc[9].includes(17)) {splashMoveTags.innerHTML += "<p>Ignores Protect</p>";};
+      if (thisDesc[9].includes(18)) {splashMoveTags.innerHTML += "<p>Ignores Substitute</p>";};
+      if (thisDesc[9].includes(19)) {splashMoveTags.innerHTML += "<p>Switches out target</p>";};
+      if (thisDesc[9].includes(52)) {splashMoveTags.innerHTML += "<p>User switches out</p>";};
+      if (thisDesc[9].includes(23)) {splashMoveTags.innerHTML += "<p>Hits 2 times</p>";};
+      if (thisDesc[9].includes(24)) {splashMoveTags.innerHTML += "<p>Hits 3 times</p>";};
+      if (thisDesc[9].includes(25)) {splashMoveTags.innerHTML += "<p>Hits 10 times</p>";};
+      if (thisDesc[9].includes(26)) {splashMoveTags.innerHTML += "<p>Hits 2-5 times</p>";};
+      if (thisDesc[9].includes(38)) {splashMoveTags.innerHTML += "<p>Repeats for 2-3 turns</p>";};
+      if (thisDesc[9].includes(43)) {splashMoveTags.innerHTML += "<p>One Hit KO move</p>";};
+      if (thisDesc[9].includes(44)) {splashMoveTags.innerHTML += "<p>Removes hazards</p>";};
+      if (thisDesc[9].includes(45)) {splashMoveTags.innerHTML += "<p>Traps and damages target</p>";};
+      if (thisDesc[9].includes(46)) {splashMoveTags.innerHTML += "<p>30% deal 2x damage</p>";};
+      // if (thisDesc[9].includes(6)) {splashMoveTags.innerHTML += "<p>Reflectable by magic</p>";};
+      if (thisDesc[9].includes(47)) {splashMoveTags.innerHTML += "<p>Can't be redirected</p>";};
+      if (thisDesc[9].includes(48)) {splashMoveTags.innerHTML += "<p>Always hits in Rain</p>";};
+      if (thisDesc[9].includes(49)) {splashMoveTags.innerHTML += "<p>No effect on Bosses</p>";};
+      if (thisDesc[9].includes(4)) {splashMoveTags.innerHTML += "<p>Makes Contact</p>";};
+      if (thisDesc[9].includes(51)) {splashMoveTags.innerHTML += "<p style='color:rgb(240, 230, 140);'>Partially Implemented</p>";};
+      if (thisDesc[9].includes(50)) {splashMoveTags.innerHTML += "<p style='color:rgb(239, 131, 131);'>Not Implemented</p>";};
+      splashContent.appendChild(splashMoveTags);
+    }
+  }
+  splashScreen.classList.add("show"); // Make it visible
+}
 function fidToCategory(fid) {
   if (fid < fidThreshold[0]) { return 'Type'; }
   if (fid < fidThreshold[1]) { return 'Ability'; }
@@ -328,7 +432,7 @@ function fidToCategory(fid) {
   else { return 'Egg Tier'; }
 }
 function fidToColor(fid) {
-  if (fid < fidThreshold[0]) { return ['rgb(255, 255, 255)', typeColors[fidToName[fid]]]; }
+  if (fid < fidThreshold[0]) { return ['rgb(255, 255, 255)', typeColors[fid]]; }
   if (fid < fidThreshold[1]) { return ['rgb(140, 130, 240)', 'rgb(255, 255, 255)']; }
   if (fid < fidThreshold[2]) { return ['rgb(145, 145, 145)', 'rgb(255, 255, 255)']; }
   if (fid < fidThreshold[3]) { return ['rgb(131, 182, 239)', 'rgb(255, 255, 255)']; }
@@ -575,6 +679,30 @@ function benchmark(func, iterations = 100) {
 // console.log("Original method time:", benchmark(refreshAllItems), "ms");
 // console.log("Optimized method time:", benchmark(refreshAllItems), "ms");
 
+function addTestEvents() {
+  item = items[0];
+  // Show image of the pokemon
+  const pokeImg = document.createElement('img');  pokeImg.className = 'item-image';  pokeImg.stars = [];
+  pokeImg.shinyOverride = shinyState;  pokeImg.femOverride = lockedFilters.some((f) => f == fidThreshold[4]);
+  pokeImg.src = `images/${item.img}_${pokeImg.shinyOverride}${(pokeImg.femOverride ? 'f' : '')}.png`; 
+  // Create the dex column, with stars and pin only on desktop
+  const dexColumn = document.createElement('div');  dexColumn.className = 'item-column';
+  // const pinImg = document.createElement('img');     pinImg.className = 'pin-img';   pinImg.src = 'ui/pin.png';
+  const femImg = document.createElement('img');     femImg.className = 'pin-img';   femImg.src = `ui/fem${(pokeImg.femOverride ? 'on' : 'off')}.png`;
+  // if (item.fe == 1) {
+  //   femImg.addEventListener('click', () => { // Add click event to the fem button
+  //     pokeImg.femOverride = 1-pokeImg.femOverride; // Flip the fem state
+  //     pokeImg.src = `images/${item.img}_${pokeImg.shinyOverride}${(pokeImg.femOverride ? 'f' : '')}.png`; 
+  //     femImg.src = `ui/fem${(pokeImg.femOverride ? 'on' : 'off')}.png`;
+  //   });
+  //   femImg.addEventListener('mouseover', () => {femImg.src = `ui/femon.png`;});
+  //   femImg.addEventListener('mouseout',  () => {femImg.src = `ui/fem${(pokeImg.femOverride ? 'on' : 'off')}.png`;});
+  // }
+  dexColumn.appendChild(pokeImg);
+  dexColumn.appendChild(femImg);
+  headerContainer.appendChild(dexColumn);
+}
+
 // Load more items on scroll
 window.addEventListener("scroll", () => {
   if (window.scrollY + window.innerHeight >= document.body.scrollHeight * 0.8 - 1000) {
@@ -602,6 +730,9 @@ document.addEventListener('keydown', (event) => {
     lockFilter(filterToEnter); // Hit 'Enter' to lock the first filter
   }
   if (event.key == "PageDown" || event.key == "PageUp") {
+    // for (let index = 0; index < 50; index++) { // Slow down the performance for benchmarking
+    //   addTestEvents();
+    // }
     searchBox.blur(); // Allow PageUp and PageDown even when in search box
   }
   if (event.key == "Escape") { // Hit escape to clear the search box, or the last filter
@@ -645,11 +776,12 @@ openMenuButton.addEventListener("click", () => {
 });
 function openMenu() {
 // Assemble the content for the help splash screen
+  splashContent.style.width = '382px';
   splashContent.innerHTML = `
   <b>This is a <span style="color:rgb(140, 130, 240);">fast and powerful search</span> for Pokerogue.</b><hr>
 
   <p style="margin: 10px; font-weight: bold;">Use the <span style="color:rgb(140, 130, 240); text-decoration: underline;">Search Bar</span> to add filters for:<br></p>
-  <p style="margin: 10px; font-weight: bold;"><span style="color:${typeColors['Grass']};">Types</span>, 
+  <p style="margin: 10px; font-weight: bold;"><span style="color:${typeColors[9]};">Types</span>, 
   <span style="color:${fidToColor(fidThreshold[0])[0]};">Abilities</span>, 
   <span style="color:${fidToColor(fidThreshold[1])[0]};">Moves</span>, 
   <span style="color:${fidToColor(fidThreshold[2])[0]};">Generation</span>, 

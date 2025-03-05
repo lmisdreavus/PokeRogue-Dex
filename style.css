@@ -354,13 +354,10 @@ h1 > div:nth-child(2){
 #itemList li:nth-child(odd) {
   background-color: #252129; /* Alternate row color */
 }
-.ability-name {
+.clickable-name {
   font-weight: bold;
-  /* cursor: pointer; */
+  cursor: pointer;
 }
-/* .ability-name:hover {
-  color: blue;
-} */
 
 .star-header {
   margin: auto;
@@ -418,13 +415,17 @@ h1 > div:nth-child(2){
   justify-content: space-between;
 }
 .splash-move-row {
-  max-width: 250px;
-}
-.splash-move-column {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
   align-items: center;
-  text-align: center;
   padding: 0 0px;
+  font-weight: bold;
+}
+.splash-move-tags > p {
   /* outline: 1px solid red; */
+  font-weight: bold;
+  margin: 0px;
+  margin-top: 8px;
 }
 hr {
   border: none;
