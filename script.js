@@ -347,7 +347,10 @@ function showMoveSplash(fid) {
       splashMoveRow.appendChild(splashMoveCol);
     });
     splashContent.appendChild(splashMoveRow);
-    splashContent.innerHTML += '<hr>' + thisDesc[0]; // Show move description
+    splashContent.innerHTML += `<hr>${thisDesc[0]}`; // Show move description
+    if (thisDesc[1]) { // If there is a custom description
+      splashContent.innerHTML += `<br><span style="color:rgb(145, 145, 145);"> ${thisDesc[1]}</span>`;
+    }
     // Add all tags for priority, targets, procs, contact, other
     if (thisDesc[7] || thisDesc[8] || thisDesc[9]) {
       const splashMoveTags = document.createElement('div');  splashMoveTags.className = 'splash-move-tags';
@@ -364,9 +367,16 @@ function showMoveSplash(fid) {
         const procStages = ((thisProc[2] == '0') ? '' : ` ${(thisProc[2] > 0 ? '+' : '')}${thisProc[2]} `);
         splashMoveTags.innerHTML += `<p>${procChance}${procToDesc[thisProc[1]]}${procStages}</p>`;
       });
+      if (thisDesc[9].includes(60)) {splashMoveTags.innerHTML += "<p>User Atk maxed</p>";};
       if (thisDesc[9].includes(0)) {splashMoveTags.innerHTML += "<p>High Critical Ratio</p>";};
       if (thisDesc[9].includes(1)) {splashMoveTags.innerHTML += "<p>Guaranteed Critical Hit</p>";};
       if (thisDesc[9].includes(2)) {splashMoveTags.innerHTML += "<p>User Critical Rate +1</p>";};
+      if (thisDesc[9].includes(35)) {splashMoveTags.innerHTML += "<p>Costs 50% of HP</p>";};
+      if (thisDesc[9].includes(59)) {splashMoveTags.innerHTML += "<p>Costs 33% of HP</p>";};
+      if (thisDesc[9].includes(34)) {splashMoveTags.innerHTML += "<p>Recoil 50% of HP</p>";};
+      if (thisDesc[9].includes(36)) {splashMoveTags.innerHTML += "<p>Recoil 33% of damage</p>";};
+      if (thisDesc[9].includes(37)) {splashMoveTags.innerHTML += "<p>Recoil 50% of damage</p>";};
+      if (thisDesc[9].includes(53)) {splashMoveTags.innerHTML += "<p>Recoil 25% of damage</p>";};
       if (thisDesc[9].includes(27)) {splashMoveTags.innerHTML += "<p>Heals Status Effects</p>";};
       if (thisDesc[9].includes(28)) {splashMoveTags.innerHTML += "<p>Heals Status Effects</p>";};
       if (thisDesc[9].includes(29)) {splashMoveTags.innerHTML += "<p>Heals Sleep</p>";};
@@ -377,6 +387,7 @@ function showMoveSplash(fid) {
       if (thisDesc[9].includes(40)) {splashMoveTags.innerHTML += "<p>Heals 75% damage dealt</p>";};
       if (thisDesc[9].includes(41)) {splashMoveTags.innerHTML += "<p>Heals by target's Atk</p>";};
       if (thisDesc[9].includes(42)) {splashMoveTags.innerHTML += "<p>Heals 50% damage dealt</p>";};
+      if (thisDesc[9].includes(13)) {splashMoveTags.innerHTML += "<p>Triage gives +3 priority</p>";};
       if (thisDesc[9].includes(5)) {splashMoveTags.innerHTML += "<p>No effect on Grass/Overcoat</p>";};
       if (thisDesc[9].includes(55)) {splashMoveTags.innerHTML += "<p>No seeding on Grass Types</p>";};
       if (thisDesc[9].includes(7)) {splashMoveTags.innerHTML += "<p>Boosted by Sharpness</p>";};
@@ -386,12 +397,6 @@ function showMoveSplash(fid) {
       if (thisDesc[9].includes(11)) {splashMoveTags.innerHTML += "<p>Boosted by Mega Launcher</p>";};
       if (thisDesc[9].includes(12)) {splashMoveTags.innerHTML += "<p>Boosted by Strong Jaw</p>";};
       if (thisDesc[9].includes(33)) {splashMoveTags.innerHTML += "<p>Boosted by Reckless</p>";};
-      if (thisDesc[9].includes(34)) {splashMoveTags.innerHTML += "<p>Costs 50% of HP</p>";};
-      if (thisDesc[9].includes(35)) {splashMoveTags.innerHTML += "<p>Costs 25% of HP</p>";};
-      if (thisDesc[9].includes(36)) {splashMoveTags.innerHTML += "<p>Recoil 33% of damage</p>";};
-      if (thisDesc[9].includes(37)) {splashMoveTags.innerHTML += "<p>Recoil 50% of damage</p>";};
-      if (thisDesc[9].includes(53)) {splashMoveTags.innerHTML += "<p>Recoil 25% of damage</p>";};
-      if (thisDesc[9].includes(13)) {splashMoveTags.innerHTML += "<p>Triage gives +3 priority</p>";};
       if (thisDesc[9].includes(14)) {splashMoveTags.innerHTML += "<p>Sound based move</p>";};
       if (thisDesc[9].includes(15)) {splashMoveTags.innerHTML += "<p>Prevented by Damp ability</p>";};
       if (thisDesc[9].includes(16)) {splashMoveTags.innerHTML += "<p>Triggers Wind Rider</p>";};
