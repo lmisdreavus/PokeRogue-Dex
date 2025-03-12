@@ -27,7 +27,7 @@ let abilityState = 0; // Global state of ability (0,1,2,3)
 
 // Set up the header columns
 let headerColumns = [];
-const headerNames = ['Dex', 'Shiny', 'Species', 'Types', 'Abilities', 'Egg Moves', 'Cost', 'BST', 'HP', 'Atk', 'Def', 'SpA', 'SpD', 'Spe'];
+const headerNames = ['번호', '이로치', '종', '타입', '특성', '알기술', '코스트', '종족값', 'HP', '공격', '방어', '특공', '특방', '스핏'];
 const sortAttributes = ['row', 'shiny', 'sp', 't1', 'ab', 'moves', 'co', 'bst', 'hp', 'atk', 'def', 'spa', 'spd', 'spe'];
 headerNames.forEach((thisHeaderName, index) => {
   const newColumn = document.createElement('div');
@@ -260,13 +260,13 @@ function renderMoreItems() {
       if (thisMove in item && numMovesShown < 2) { 
         numMovesShown += 1;
         let source = item[thisMove];
-        if (source == -1) {sourceText = '<span style="color:rgb(240, 173, 131);">Memory';}
-        else if (source == 0) {sourceText = '<span style="color:rgb(131, 182, 239);">Evolution';}
-        else if (source == 201) {sourceText = '<span style="color:rgb(255, 255, 255);">Egg Move';}
-        else if (source == 202) {sourceText = '<span style="color:rgb(240, 230, 140);">Rare Egg Move';}
-        else if (source == 203) {sourceText = '<span style="color:rgb(255, 255, 255);">Common TM';}
-        else if (source == 204) {sourceText = '<span style="color:rgb(131, 182, 239);">Great TM';}
-        else if (source == 205) {sourceText = '<span style="color:rgb(240, 230, 140);">Ultra TM';}
+        if (source == -1) {sourceText = '<span style="color:rgb(240, 173, 131);">떠올리기';}
+        else if (source == 0) {sourceText = '<span style="color:rgb(131, 182, 239);">진화';}
+        else if (source == 201) {sourceText = '<span style="color:rgb(255, 255, 255);">알 기술';}
+        else if (source == 202) {sourceText = '<span style="color:rgb(240, 230, 140);">레어 알 기술';}
+        else if (source == 203) {sourceText = '<span style="color:rgb(255, 255, 255);">기술머신(몬스터볼)';}
+        else if (source == 204) {sourceText = '<span style="color:rgb(131, 182, 239);">기술머신(수퍼볼)';}
+        else if (source == 205) {sourceText = '<span style="color:rgb(240, 230, 140);">기술머신(하이퍼볼)';}
         else {sourceText = `<span style="color:rgb(255, 255, 255);">Lv ${item[thisMove]}`;}
         // Show the move name, with click event for splash screen
         const clickableRow = document.createElement('div');  clickableRow.className = 'clickable-name';
@@ -289,22 +289,22 @@ function renderMoreItems() {
 
     const costColumn = document.createElement('div'); // Show the cost, colored by the egg tier
           costColumn.className = 'item-column'; costColor = eggTierColors(item.et);
-          costColumn.innerHTML = `<b>Cost<br><span style="color:${costColor};">${item.co}</span></b>`;  
+          costColumn.innerHTML = `<b>코스트<br><span style="color:${costColor};">${item.co}</span></b>`;  
     let flipped = lockedFilters.includes(fidThreshold[5]);                
     const bstColumn = document.createElement('div');  bstColumn.className = 'item-column'; // Create the stats columns
-           bstColumn.innerHTML = '<b>BST<br>' + item.bst +'</b>';
+           bstColumn.innerHTML = '<b>합계<br>' + item.bst +'</b>';
     const hpColumn = document.createElement('div');   hpColumn.className = 'item-column';  
           hpColumn.innerHTML  = '<b>HP<br>'  + (flipped ? item.spe : item.hp)  +'</b>';
     const atkColumn = document.createElement('div');  atkColumn.className = 'item-column'; 
-          atkColumn.innerHTML = '<b>Atk<br>' + (flipped ? item.spd : item.atk) +'</b>';    
+          atkColumn.innerHTML = '<b>공격<br>' + (flipped ? item.spd : item.atk) +'</b>';    
     const defColumn = document.createElement('div');  defColumn.className = 'item-column'; 
-          defColumn.innerHTML = '<b>Def<br>' + (flipped ? item.spa : item.def) +'</b>';    
+          defColumn.innerHTML = '<b>방어<br>' + (flipped ? item.spa : item.def) +'</b>';    
     const spaColumn = document.createElement('div');  spaColumn.className = 'item-column'; 
-          spaColumn.innerHTML = '<b>SpA<br>' + (flipped ? item.def : item.spa) +'</b>';    
+          spaColumn.innerHTML = '<b>특공<br>' + (flipped ? item.def : item.spa) +'</b>';    
     const spdColumn = document.createElement('div');  spdColumn.className = 'item-column'; 
-          spdColumn.innerHTML = '<b>SpD<br>' + (flipped ? item.atk : item.spd) +'</b>';    
+          spdColumn.innerHTML = '<b>특방<br>' + (flipped ? item.atk : item.spd) +'</b>';    
     const speColumn = document.createElement('div');  speColumn.className = 'item-column'; 
-          speColumn.innerHTML = '<b>Spe<br>' + (flipped ? item.hp : item.spe)  +'</b>';
+          speColumn.innerHTML = '<b>스핏<br>' + (flipped ? item.hp : item.spe)  +'</b>';
 
     const row1 = document.createElement('div'); row1.className = 'row'; let row2 = row1;
     if (isMobile) {
@@ -341,7 +341,7 @@ function showMoveSplash(fid) {
     const splashMoveCol1 = document.createElement('div');
     splashMoveCol1.innerHTML = `<span style="color:${typeColors[thisDesc[2]]};">${fidToName[thisDesc[2]]}</span><br><img src="ui/cat${thisDesc[3]}.png"></img>`;
     splashMoveRow.appendChild(splashMoveCol1);
-    ['Pow','Acc','PP'].forEach((attName,index) => {
+    ['위력','명중률','PP'].forEach((attName,index) => {
       const splashMoveCol = document.createElement('div');
       splashMoveCol.innerHTML = `${attName}<br>${(thisDesc[4+index]==-1 ? '-' : thisDesc[4+index])}`;
       splashMoveRow.appendChild(splashMoveCol);
@@ -594,28 +594,28 @@ function updateHeader(clickTarget = null, ignoreFlip = false) {
     headerColumns[5].textDef = '<span style="color:rgb(140, 130, 240);">' 
                              + (isMobile ? 'Moves' : 'Filtered Moves') + '</span>';
   } else {
-    headerColumns[5].textDef = (isMobile ? 'Egg Moves' : 'Egg Moves');
+    headerColumns[5].textDef = (isMobile ? 'Egg Moves' : '알 기술');
   }
   if (sortAttribute == 'shiny') { // Toggle the global shiny state
     shinyState = (shinyState == 0 ? 3 : shinyState-1);
     if (shinyState) {
-      headerColumns[1].innerHTML = '<span style="color:rgb(140, 130, 240);">Shiny</span>';
+      headerColumns[1].innerHTML = '<span style="color:rgb(140, 130, 240);">이로치</span>';
       const starImg = document.createElement('img');
       starImg.className = 'star-header';
       starImg.src = `ui/shiny${shinyState}.png`;
       headerColumns[1].appendChild(starImg);
     } else {
-      headerColumns[1].innerHTML = 'Shiny';
+      headerColumns[1].innerHTML = '이로치';
     }
   } else if (sortAttribute == 'ab') { // Toggle the global ability state
     abilityState = (abilityState == 3 ? 0 : abilityState+1);
     if (abilityState) {
-      headerColumns[4].innerHTML = `<span style="color:rgb(140, 130, 240);">Abilities</span>`;
-      if (abilityState == 1) {headerColumns[4].innerHTML += `<span style="color:rgb(255, 255, 255); font-size:12px;">(Main Only)</span>`;}
-      else if (abilityState == 2) {headerColumns[4].innerHTML += `<span style="color:rgb(240, 230, 140); font-size:12px;">(Hidden Only)</span>`;}
-      else if (abilityState == 3) {headerColumns[4].innerHTML += `<span style="color:rgb(140, 130, 240); font-size:12px;">(Passive Only)</span>`;}
+      headerColumns[4].innerHTML = `<span style="color:rgb(140, 130, 240);">특성</span>`;
+      if (abilityState == 1) {headerColumns[4].innerHTML += `<span style="color:rgb(255, 255, 255); font-size:12px;">(일반특성만 표시)</span>`;}
+      else if (abilityState == 2) {headerColumns[4].innerHTML += `<span style="color:rgb(240, 230, 140); font-size:12px;">(숨겨진 특성만 표시)</span>`;}
+      else if (abilityState == 3) {headerColumns[4].innerHTML += `<span style="color:rgb(140, 130, 240); font-size:12px;">(패시브 표시)</span>`;}
     } else {
-      headerColumns[4].innerHTML = 'Abilities';
+      headerColumns[4].innerHTML = '특성';
     }
   } else {
     headerColumns[5].innerHTML = headerColumns[5].textDef;
@@ -786,33 +786,33 @@ function openMenu() {
 // Assemble the content for the help splash screen
   splashContent.style.width = '382px';
   splashContent.innerHTML = `
-  <b>This is a <span style="color:rgb(140, 130, 240);">fast and powerful search</span> for Pokerogue.</b><hr>
+  <b>이곳은 포켓로그를 위한 <span style="color:rgb(140, 130, 240);"><br>빠르고 강력한 검색</span> 사이트입니다.</b><hr>
 
-  <p style="margin: 10px; font-weight: bold;">Use the <span style="color:rgb(140, 130, 240); text-decoration: underline;">Search Bar</span> to add filters for:<br></p>
-  <p style="margin: 10px; font-weight: bold;"><span style="color:${typeColors[9]};">Types</span>, 
-  <span style="color:${fidToColor(fidThreshold[0])[0]};">Abilities</span>, 
-  <span style="color:${fidToColor(fidThreshold[1])[0]};">Moves</span>, 
-  <span style="color:${fidToColor(fidThreshold[2])[0]};">Generation</span>, 
-  <span style="color:${fidToColor(fidThreshold[3])[0]};">Cost</span>,<br>
-  <span style="color:${fidToColor(fidThreshold[4])[0]};">Female Sprites</span>,  
-  <span style="color:${fidToColor(fidThreshold[5])[1]};">Flipped Stat Mode</span>, or
-  <span style="color:${eggTierColors(1)};">Egg Tier</span>.</p>
-  Combine multiple filters to get what you want. <br>
-  <span style="color:rgb(145, 145, 145);"> You can toggle between "AND" & "OR" connectors.</span><hr>
+  <p style="margin: 10px; font-weight: bold;"><span style="color:rgb(140, 130, 240); text-decoration: underline;">검색 창</span>을 이용하여 다음과 같은 필터를 <br>추가할 수 있습니다:<br></p>
+  <p style="margin: 10px; font-weight: bold;"><span style="color:${typeColors[9]};">타입</span>, 
+  <span style="color:${fidToColor(fidThreshold[0])[0]};">특성</span>, 
+  <span style="color:${fidToColor(fidThreshold[1])[0]};">기술</span>, 
+  <span style="color:${fidToColor(fidThreshold[2])[0]};">세대</span>, 
+  <span style="color:${fidToColor(fidThreshold[3])[0]};">코스트</span>,<br>
+  <span style="color:${fidToColor(fidThreshold[4])[0]};">암컷 스프라이트</span>,  
+  <span style="color:${fidToColor(fidThreshold[5])[1]};">능력치 역전(종족치 보기)</span><br> 혹은
+  <span style="color:${eggTierColors(1)};">알 티어</span>.</p>
+  여러 필터를 조합하여 원하는 결과를 얻으세요. <br>
+  <span style="color:rgb(145, 145, 145);">"AND" 와 "OR" 연결 방식을 전환할 수 있습니다.</span><hr>
 
-  <p style="margin: 10px; font-weight: bold;">Click the <span style="color:rgb(140, 130, 240); text-decoration: underline;">Headers</span> to sort the results:</p>
-  <p style="margin: 10px;"><b>Dex</b> column links to the <a href="https://wiki.pokerogue.net/start" target="_blank">Official Wiki</a></p>
-  <b>Shiny</b> column shows who has shiny variants.
-  <p style="margin: 10px;"><b>Ability</b> column shows <b>Main Abilities</b>, 
-  <span style="color:rgb(240, 230, 140);"><b>Hidden Ability</b></span>, and 
-  <span style="color:rgb(140, 130, 240);"><b>Passive</b></span>. 
-  <span style="color:rgb(145, 145, 145);">Click the header to restrict to one of those categories.</span></p>
-  <b>Egg Move</b> column shows <b>Normal</b> and <span style="color:rgb(240, 230, 140);"><b>Rare</b></span> egg moves. 
-  <span style="color:rgb(145, 145, 145);">After searching for a move, this column will update to show who learns the move first.</span>
-  <p style="margin: 10px;"><b>Cost</b> column is colored by <b>Egg Tier</b>:<br> 
-  <b>Common</b>, <span style="color:rgb(131, 182, 239);"><b>Rare</b></span>, <span style="color:rgb(240, 230, 140);"><b>Epic</b></span>, <span style="color:rgb(239, 131, 131);"><b>Manaphy</b></span>, <span style="color:rgb(216, 143, 205);"><b>Legendary</b></span></p><hr style="margin-bottom: 10px;">
+  <p style="margin: 10px; font-weight: bold;">결과를 정렬하려면 <span style="color:rgb(140, 130, 240); text-decoration: underline;">헤더</span>를 클릭하세요:</p>
+  <p style="margin: 10px;"><b>번호</b> 열을 클릭하면 <a href="https://wiki.pokerogue.net/start" target="_blank">공식 위키</a>로 연결됩니다.</p>
+  <b>이로치</b> 열은 1,2,3로치 보유 여부를 표시합니다.
+  <p style="margin: 10px;"><b>특성</b> 열은 <b>일반 특성</b>, 
+  <span style="color:rgb(240, 230, 140);"><b>숨겨진 특성</b></span>, 그리고 
+  <span style="color:rgb(140, 130, 240);"><b>패시브</b></span>를<br> 보여줍니다. 
+  <span style="color:rgb(145, 145, 145);">헤더를 클릭하면 특정 카테고리로 제한할 수 있습니다.</span></p>
+  <b>알 기술</b> 열은 <b>일반</b> 그리고 <span style="color:rgb(240, 230, 140);"><b>레어</b></span> 알 기술을 표시합니다.<br> 
+  <span style="color:rgb(145, 145, 145);">기술을 검색하면, 이 열은 해당 기술를 가장 먼저 배우는 포켓몬을 업데이트하여 보여줍니다.</span>
+  <p style="margin: 10px;"><b>코스트</b> 열은 <b>알 티어</b>에 따라 색상으로 구분됩니다:<br> 
+  <b>커먼</b>, <span style="color:rgb(131, 182, 239);"><b>레어</b></span>, <span style="color:rgb(240, 230, 140);"><b>에픽</b></span>, <span style="color:rgb(239, 131, 131);"><b>마나피</b></span>, <span style="color:rgb(216, 143, 205);"><b>레전더리</b></span></p><hr style="margin-bottom: 10px;">
   
-  <span style="color:rgb(145, 145, 145); font-size:11px">This site was created by Sandstorm, through a lot of hard work. I do not store any cookies or collect any personal data. Images and game data are from the Pokerogue Github. All asset rights are retained by their original creators.</span>
+  <span style="color:rgb(145, 145, 145); font-size:11px">이 사이트는 Sandstorm이 많은 노력으로 만들어졌습니다. 쿠키를 저장하거나 개인 정보를 수집하지 않습니다. 이미지와 게임 데이터는 Pokerogue Github에서 가져왔으며, 모든 자산의 권리는 원 창작자에게 귀속됩니다.</span>
   `;
   // ${patchNotes}
   // Show Patch Notes &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp Change Language

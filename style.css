@@ -343,6 +343,8 @@ h1 > div:nth-child(2){
   padding: 0 0px;
   min-height: 36px;
   line-height: 1.125;
+  word-break: keep-all;      /* 한국어 단어(음절) 중간에서 줄바꿈되지 않도록 설정 */
+  white-space: nowrap;       /* 한 줄로 표시하고 싶다면 */
   /* outline: 1px solid red; */
 }
 .item-column {
@@ -350,6 +352,12 @@ h1 > div:nth-child(2){
   text-align: center;
   padding: 0 0px;
   /* outline: 1px solid red; */
+}
+.item-column b {
+  /* 한국어 단어 중간을 임의로 끊지 않도록 설정 */
+  word-break: keep-all;
+  /* <br> 태그에서만 줄바꿈하고, 그 외에는 자동 줄바꿈 허용(단어 중간 제외) */
+  white-space: normal;
 }
 #itemList li:nth-child(odd) {
   background-color: #252129; /* Alternate row color */
